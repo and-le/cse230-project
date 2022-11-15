@@ -5,7 +5,6 @@ module Sokoban
     Background(..),
     Cell,
     Environment
-    -- add functions to export here
 )
     where
 import Data.Matrix
@@ -30,10 +29,3 @@ data Cell = MkCell {
 type Environment = Matrix Cell 
 
 -- Add game logic functions here 
-
-
-
-
-
-
-
