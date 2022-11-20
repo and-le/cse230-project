@@ -1,12 +1,13 @@
 -- UI, event handlers 
+{-# LANGUAGE OverloadedStrings #-}
 
 module Game where 
 
 import Data.Matrix 
+import Data.Text (pack)
 
-import Brick ( App(..), BrickEvent(..), EventM, Widget, (<+>), str, withBorderStyle, emptyWidget, neverShowCursor, vBox, defaultMain)
-import Brick.AttrMap
-import Brick.Widgets.Border (border, borderWithLabel)
+import Brick ( App(..), BrickEvent(..), EventM, Widget, (<+>), str, withBorderStyle, emptyWidget)
+import Brick.Widgets.Table
 import Brick.Widgets.Center (center)
 import Brick.Widgets.Border.Style (unicode)
 
@@ -16,63 +17,76 @@ type Name = ()
 
 app :: App Environment e ()
 app = App
-  { appDraw         = drawGrid
+  { appDraw         = drawGrid Environment
   , appChooseCursor = neverShowCursor
-  , appHandleEvent  = handleEvent
+  , appHandleEvent  = e
   , appStartEvent   = return ()
-  , appAttrMap      = attributes
+  , appAttrMap      = ()
   }
-
-handleEvent :: BrickEvent Name e -> EventM Name Environment ()
-handleEvent = error "TODO"
-
-attributes :: Environment -> AttrMap
-attributes = error "TODO"
 
 drawCol rowList =
     vBox rowList
     
--- drawRow :: -- TODO
--- drawRow = 
---     foldr (<+>) emptyWidget row 
---     where
---         row = TODO
-
-drawGrid :: Environment -> [Widget Name]
-drawGrid grid = 
-    [withBorderStyle unicode $
-    borderWithLabel (str "Raccoon Rush") $
-    center (str "DATA_MATRIX HERE")]
-
-drawCell :: GameObject -> Widget Name
-drawCell Player =
-    withBorderStyle unicode $
-    border $
-    center (str "Player")
-drawCell Empty =
-    withBorderStyle unicode $
-    border $
-    center (str "")
-drawCell Trash =
-    withBorderStyle unicode $
-    border $
-    center (str "Trash")
-drawCell Wall =
-    withBorderStyle unicode $
-    border $
-    center (str "Wall")
+drawRow :: -- TODO
+drawRow = 
+    foldr (<+>) emptyWidget row 
+    where
+        row = TODO
 
 
-sampleLevel :: Environment
-sampleLevel = fromLists [[MkCell {gameObject=Empty, background=EmptyCell}, MkCell {gameObject=Empty, background=EmptyCell}, MkCell {gameObject=Wall, background=EmptyCell}]
-                        ,[MkCell {gameObject=Empty, background=EmptyCell}, MkCell {gameObject=Player, background=EmptyCell}, MkCell {gameObject=Empty, background=EmptyCell}]
-                        ,[MkCell {gameObject=Empty, background=EmptyCell}, MkCell {gameObject=Trash, background=EmptyCell}, MkCell {gameObject=Empty, background=Stash}]
-                        ]
+
+
+-- drawGrid :: Environment -> Widget Name
+drawGrid grid = setDefaultRowAlignment AlignMiddle $
+    setDefaultColAlignment AlignCenter $
+    convertMap2Table grid
+
+
+cell2string Player = "P"
+cell2string Empty = " "
+cell2string Trash = "T"
+cell2string Wall = "W"
+
+convertMap2Table :: Matrix Cell -> Table n
+convertMap2Table m = table (map (map (\x -> txt (pack (cell2string x)))) $ (toLists m))
+
+-- test table
+-- convertMap2Table :: Matrix String -> Table n
+-- convertMap2Table m = table (map (map (\x -> txt (pack x))) $ (toLists m))
+
+
+-- drawGrid grid = 
+--     withBorderStyle unicode $
+--     borderWithLabel (str "Raccoon Rush") $
+--     center (str "DATA_MATRIX HERE")
+
+-- drawCell :: Cell -> Widget Name
+-- drawCell Player =
+--     withBorderStyle unicode $
+--     border $
+--     center (str "Player")
+-- drawCell Empty =
+--     withBorderStyle unicode $
+--     border $
+--     center (str "")
+-- drawCell Trash =
+--     withBorderStyle unicode $
+--     border $
+--     center (str "Trash")
+-- drawCell Wall =
+--     withBorderStyle unicode $
+--     border $
+--     center (str "Wall")
+
+
+sampleLevel :: Environment 
+sampleLevel = fromLists [[MkCell Empty Empty, MkCell Empty Empty, MkCell Wall Empty]
+                        ,[MkCell Empty Empty, MkCell Player Empty, MkCell Empty Empty]
+                        ,[MkCell Empty Empty, MkCell Trash Empty, MkCell Empty Stash]
+]
 
 
 main :: IO ()
-main = do 
-    s <- defaultMain app sampleLevel
-    putStrLn "DONE"
+main = defaultMain app initalState
 
 -- Event Handlers

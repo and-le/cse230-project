@@ -3,7 +3,7 @@ module Sokoban
 (
     GameObject(..),
     Background(..),
-    Cell(..),
+    Cell,
     Environment
 )
     where
@@ -15,7 +15,7 @@ data GameObject = Player | Trash | Wall | Empty
     deriving (Eq, Show)
 
 -- The appearance of a grid cell
-data Background = Trashcan | Stash | EmptyCell
+data Background = Trashcan | Stash | Empty
     deriving (Eq, Show)
 
 -- An individual cell within a level, consisting of both a GameObject and a Background
@@ -28,4 +28,4 @@ data Cell = MkCell {
 -- The representation of an individual level
 type Environment = Matrix Cell 
 
--- Add game logic functions here 
+-- Add game logic functions here
