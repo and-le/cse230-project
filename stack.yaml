@@ -1,0 +1,21 @@
+# For a full list of stack.yaml definitions, see 
+# https://docs.haskellstack.org/en/stable/yaml_configuration/#yaml-configuration .
+
+# Specifies a snapshot, which states how dependencies are resolved.
+resolver: lts-18.28  
+
+# Specifies a list of packages that are part of the local project.
+# Paths are considered relative to the directory containing the stack.yaml file.
+packages:
+  - .
+
+# Overrides compiler option in the resolver.
+compiler: ghc-8.10.7 
+
+# Whether to ignore version bounds in Cabal files. This also ignores lower bounds.
+allow-newer: true 
+
+# Specifies extra dependencies on top of what is defined in the snapshot.
+extra-deps: 
+  - matrix-0.3.6.1
+
