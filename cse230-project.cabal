@@ -1,0 +1,36 @@
+name:                cse230-project
+version:             0.1.0.0
+synopsis:            Raccoon Rush
+description:         Sokoban game featuring a raccoon
+license:             MIT
+license-file:        LICENSE
+author:              CSE 230 Project Group 25
+maintainer:          a1le@ucsd.edu 
+category:            Class Project 
+build-type:          Simple
+extra-source-files:  README.md
+cabal-version:       >=1.10
+
+library
+  ghc-options:        -W
+  exposed-modules:     Sokoban
+  build-depends:       base,
+                       brick,
+                       matrix,
+                       microlens,
+                       text,
+                       vty
+  hs-source-dirs:      src
+  default-language:    Haskell2010
+
+executable racoonrush
+  build-depends:       base,
+                       brick,
+                       matrix,
+                       microlens,
+                       text,
+                       vty,
+                       cse230-project
+  default-language:    Haskell2010
+  main-is:             src/Game.hs
+
