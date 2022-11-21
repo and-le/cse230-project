@@ -9,12 +9,15 @@ import Data.Text (pack)
 import Brick (
                App(..), BrickEvent(..), EventM, Widget, Next,
                (<+>), str, withBorderStyle, emptyWidget,
-               neverShowCursor, vBox, defaultMain,txt
+               neverShowCursor, vBox, defaultMain, txt, continue
              )
 import Brick.AttrMap
+import Brick.Util (fg)
 import Brick.Widgets.Table
 import Brick.Widgets.Center (center)
 import Brick.Widgets.Border.Style (unicode)
+
+import Graphics.Vty as V
 
 import Sokoban
 
@@ -26,14 +29,16 @@ app = App
   , appChooseCursor = neverShowCursor
   , appHandleEvent  = handleEvent
   , appStartEvent   = return
-  , appAttrMap      = attributes
+  , appAttrMap      = const attributes
   }
 
+-- does nothing right now
 handleEvent :: Environment -> BrickEvent Name e -> EventM Name (Next Environment)
-handleEvent = error "TODO"
+handleEvent env _ = continue env
 
-attributes :: Environment -> AttrMap
-attributes = error "TODO"
+-- does nothing right now
+attributes :: AttrMap
+attributes = attrMap V.defAttr [(attrName "player", fg V.cyan)]
 
 -- drawCol rowList =
 --     vBox rowList
