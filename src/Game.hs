@@ -6,7 +6,12 @@ module Game where
 import Data.Matrix 
 import Data.Text (pack)
 
-import Brick ( App(..), BrickEvent(..), EventM, Widget, (<+>), str, withBorderStyle, emptyWidget)
+import Brick (
+               App(..), BrickEvent(..), EventM, Widget, Next,
+               (<+>), str, withBorderStyle, emptyWidget,
+               neverShowCursor, vBox, defaultMain,txt
+             )
+import Brick.AttrMap
 import Brick.Widgets.Table
 import Brick.Widgets.Center (center)
 import Brick.Widgets.Border.Style (unicode)
@@ -15,31 +20,37 @@ import Sokoban
 
 type Name = ()
 
-app :: App Environment e ()
+app :: App Environment e Name
 app = App
-  { appDraw         = drawGrid Environment
+  { appDraw         = drawGrid
   , appChooseCursor = neverShowCursor
-  , appHandleEvent  = e
-  , appStartEvent   = return ()
-  , appAttrMap      = ()
+  , appHandleEvent  = handleEvent
+  , appStartEvent   = return
+  , appAttrMap      = attributes
   }
 
-drawCol rowList =
-    vBox rowList
+handleEvent :: Environment -> BrickEvent Name e -> EventM Name (Next Environment)
+handleEvent = error "TODO"
+
+attributes :: Environment -> AttrMap
+attributes = error "TODO"
+
+-- drawCol rowList =
+--     vBox rowList
     
-drawRow :: -- TODO
-drawRow = 
-    foldr (<+>) emptyWidget row 
-    where
-        row = TODO
+-- drawRow :: -- TODO
+-- drawRow = 
+--     foldr (<+>) emptyWidget row 
+--     where
+--         row = TODO
 
 
 
 
--- drawGrid :: Environment -> Widget Name
-drawGrid grid = setDefaultRowAlignment AlignMiddle $
+drawGrid :: Environment -> [Widget Name]
+drawGrid grid = [renderTable (setDefaultRowAlignment AlignMiddle $
     setDefaultColAlignment AlignCenter $
-    convertMap2Table grid
+    convertMap2Table grid)]
 
 
 cell2string Player = "P"
@@ -47,8 +58,8 @@ cell2string Empty = " "
 cell2string Trash = "T"
 cell2string Wall = "W"
 
-convertMap2Table :: Matrix Cell -> Table n
-convertMap2Table m = table (map (map (\x -> txt (pack (cell2string x)))) $ (toLists m))
+convertMap2Table :: Environment -> Table n
+convertMap2Table m = table (map (map (\x -> txt (pack (cell2string x)))) $ (map (map gameObject) (toLists m)))
 
 -- test table
 -- convertMap2Table :: Matrix String -> Table n
@@ -80,13 +91,15 @@ convertMap2Table m = table (map (map (\x -> txt (pack (cell2string x)))) $ (toLi
 
 
 sampleLevel :: Environment 
-sampleLevel = fromLists [[MkCell Empty Empty, MkCell Empty Empty, MkCell Wall Empty]
-                        ,[MkCell Empty Empty, MkCell Player Empty, MkCell Empty Empty]
-                        ,[MkCell Empty Empty, MkCell Trash Empty, MkCell Empty Stash]
-]
+sampleLevel = fromLists [[MkCell {gameObject=Empty, background=EmptyCell}, MkCell {gameObject=Empty, background=EmptyCell}, MkCell {gameObject=Wall, background=EmptyCell}]
+                        ,[MkCell {gameObject=Empty, background=EmptyCell}, MkCell {gameObject=Player, background=EmptyCell}, MkCell {gameObject=Empty, background=EmptyCell}]
+                        ,[MkCell {gameObject=Empty, background=EmptyCell}, MkCell {gameObject=Trash, background=EmptyCell}, MkCell {gameObject=Empty, background=Stash}]
+                        ]
 
 
 main :: IO ()
-main = defaultMain app initalState
+main = do 
+    s <- defaultMain app sampleLevel
+    putStrLn "DONE"
 
 -- Event Handlers
