@@ -9,7 +9,7 @@ import Data.Text (pack)
 import Brick (
                App(..), BrickEvent(..), EventM, Widget, Next,
                (<+>), str, withBorderStyle, emptyWidget,
-               neverShowCursor, vBox, defaultMain, txt, continue
+               neverShowCursor, vBox, defaultMain, txt, continue, halt
              )
 import Brick.AttrMap
 import Brick.Util (fg)
@@ -32,9 +32,10 @@ app = App
   , appAttrMap      = const attributes
   }
 
--- does nothing right now
+-- Esc key to quit
 handleEvent :: Environment -> BrickEvent Name e -> EventM Name (Next Environment)
-handleEvent env _ = continue env
+handleEvent env (VtyEvent (V.EvKey V.KEsc [])) = halt env
+handleEvent env _                              = continue env
 
 -- does nothing right now
 attributes :: AttrMap
@@ -94,12 +95,6 @@ convertMap2Table m = table (map (map (\x -> txt (pack (cell2string x)))) $ (map 
 --     border $
 --     center (str "Wall")
 
-
-sampleLevel :: Environment 
-sampleLevel = fromLists [[MkCell {gameObject=Empty, background=EmptyCell}, MkCell {gameObject=Empty, background=EmptyCell}, MkCell {gameObject=Wall, background=EmptyCell}]
-                        ,[MkCell {gameObject=Empty, background=EmptyCell}, MkCell {gameObject=Player, background=EmptyCell}, MkCell {gameObject=Empty, background=EmptyCell}]
-                        ,[MkCell {gameObject=Empty, background=EmptyCell}, MkCell {gameObject=Trash, background=EmptyCell}, MkCell {gameObject=Empty, background=Stash}]
-                        ]
 
 
 main :: IO ()
