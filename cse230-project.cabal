@@ -38,3 +38,17 @@ executable raccoonrush
   default-language:    Haskell2010
   main-is:             src/Main.hs
 
+
+test-suite test
+  type:             exitcode-stdio-1.0
+  hs-source-dirs:   test
+  main-is:          Test.hs
+  build-depends:    base,
+                    matrix,
+                    QuickCheck,
+                    tasty,
+                    tasty-hunit,
+                    tasty-quickcheck,
+
+                    cse230-project 
+

@@ -5,7 +5,13 @@ module Sokoban
     Background(..),
     Cell(..),
     Environment,
-    sampleLevel
+    Movement(..),
+    sampleLevel,
+    emptyCell,
+    playerCell,
+    wallCell,
+    trashCell,
+    isValidMove
 )
     where
 import Data.Matrix
@@ -153,9 +159,9 @@ getNumCols mat = Data.Vector.length (getCol 1 mat)
 findIndexMatrix :: (Eq a) => Matrix a -> (a -> Bool) -> Maybe Location
 findIndexMatrix mat predicate = helper mat predicate (getNumRows mat) (getNumCols mat) 1 1
     where 
-    helper :: (Eq a) => Matrix a -> (a -> Bool) -> Int -> Int -> Int -> Int -> Maybe Location
-    helper mat predicate numRows numCols row col
-        | row > numRows = Nothing -- reached end of matrix without finding desired element
-        | col > numCols = helper mat predicate numRows numCols (row + 1) 1 -- reached end of row
-        | predicate (getElem row col mat) = Just (row, col)
-        | otherwise = helper mat predicate numRows numCols row (col + 1)
+        helper :: (Eq a) => Matrix a -> (a -> Bool) -> Int -> Int -> Int -> Int -> Maybe Location
+        helper mat predicate numRows numCols row col
+            | row > numRows = Nothing -- reached end of matrix without finding desired element
+            | col > numCols = helper mat predicate numRows numCols (row + 1) 1 -- reached end of row
+            | predicate (getElem row col mat) = Just (row, col)
+            | otherwise = helper mat predicate numRows numCols row (col + 1)
