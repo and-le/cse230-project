@@ -20,19 +20,35 @@ library
                        matrix,
                        microlens,
                        text,
+                       vector,
                        vty
   hs-source-dirs:      src
   default-language:    Haskell2010
 
-executable racoonrush
+executable raccoonrush
   ghc-options:         -threaded
   build-depends:       base,
                        brick,
                        matrix,
                        microlens,
                        text,
+                       vector,
                        vty,
                        cse230-project
   default-language:    Haskell2010
   main-is:             src/Main.hs
+
+
+test-suite test
+  type:             exitcode-stdio-1.0
+  hs-source-dirs:   test
+  main-is:          Test.hs
+  build-depends:    base,
+                    matrix,
+                    QuickCheck,
+                    tasty,
+                    tasty-hunit,
+                    tasty-quickcheck,
+
+                    cse230-project 
 
