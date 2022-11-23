@@ -35,6 +35,10 @@ app = App
 -- Esc key to quit
 handleEvent :: Environment -> BrickEvent Name e -> EventM Name (Next Environment)
 handleEvent env (VtyEvent (V.EvKey V.KEsc [])) = halt env
+handleEvent env (VtyEvent (V.EvKey V.KUp [])) = continue $ move UpMv env
+handleEvent env (VtyEvent (V.EvKey V.KRight [])) = continue $ move RightMv env
+handleEvent env (VtyEvent (V.EvKey V.KDown [])) = continue $ move DownMv env
+handleEvent env (VtyEvent (V.EvKey V.KLeft [])) = continue $ move LeftMv env
 handleEvent env _                              = continue env
 
 -- does nothing right now

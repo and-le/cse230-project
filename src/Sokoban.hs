@@ -6,6 +6,7 @@ module Sokoban
     Cell(..),
     Environment,
     Movement(..),
+    move,
     sampleLevel,
     emptyCell,
     playerCell,
@@ -36,7 +37,17 @@ data Cell = MkCell {
     deriving (Eq, Show)
 
 -- The representation of an individual level
-type Environment = Matrix Cell 
+type Environment = Matrix Cell
+
+-- The types of valid moves
+data Movement = UpMv | RightMv | DownMv | LeftMv 
+    deriving (Eq, Show)
+
+data MoveStatus = ValidPush | ValidMov | InvalidMov
+    deriving (Eq, Show)
+
+-- Represents a (row, column) index in an Environment
+type Location = (Int, Int)
 
 -- level building
 emptyCell :: Cell -- just for shorter code
@@ -65,31 +76,67 @@ sampleLevel = fromLists [[emptyCell , emptyCell     , wallCell       , emptyCell
                         ,[wallCell , wallCell     , wallCell       , emptyCell]
                         ]
 
--- The types of valid moves
-data Movement = UpMv | RightMv | DownMv | LeftMv 
-    deriving (Eq, Show)
+-- handle state change for motions
+move :: Movement -> Environment -> Environment
+move mv start =
+    case isVal of
+        ValidPush -> movPush mv start loc
+        ValidMov -> movAndReplace mv Empty loc start
+        InvalidMov -> start -- return same state since not valid move
+    where
+        loc = getPlayerLocation start
+        isVal = isValidMove mv loc start
 
--- Represents a (row, column) index in an Environment
-type Location = (Int, Int)
+-- handle pushing
+movPush mv start loc = newEnv
+    where
+        (i1, j1) = loc
+        (i2, j2) = getLocationAfterMovement mv loc
+        (i3, j3) = getLocationAfterMovement mv (i2, j2)
+        pushElem = getElem i2 j2 start
+        newEnv = movAndReplace mv Empty loc (movAndReplace mv Player (i2, j2) start)
+
+-- move the thing at location in movment direction, replace its object with gameobject
+movAndReplace :: Movement -> GameObject -> Location -> Environment -> Environment
+movAndReplace mv newObj loc start = newEnv
+    where
+        (i1, j1) = loc
+        (i2, j2) = getLocationAfterMovement mv loc
+        elem1 = getElem i1 j1 start
+        elem2 = getElem i2 j2 start
+        elem1' = MkCell {gameObject=newObj, background=(background elem1)}
+        elem2' = MkCell {gameObject=(gameObject elem1), background=(background elem2)}
+        newEnv = setElem elem2' (i2,j2) (setElem elem1' (i1,j1) start)
+
+
 
 -- Returns the Cell at the given location in the environment.
 getCellAtLocation :: Location -> Environment -> Cell 
 getCellAtLocation (row, col) env = getElem row col env 
 
--- Returns True if the given movement with respect to the given location is valid for the 
--- current environment; False otherwise.
-isValidMove :: Movement -> Location -> Environment -> Bool 
-isValidMove mv loc env = 
-    (isWithinEnvironment loc env) && 
-    (isWithinEnvironment destLoc env) && 
-    (not (containsWall destCell)) && 
-    (not (containsPlayer destCell)) && 
-    ((containsEmptySpace destCell) || (containsTrash destCell && isValidPush mv destLoc env))
+-- Returns MovStatus if the given movement with respect to the given location is valid for the 
+-- current environment; ValidPush for valid pushes, ValidMov for valid moves, InvalidMov otherwise
+isValidMove :: Movement -> Location -> Environment -> MoveStatus
+isValidMove mv loc env =
+    if boundsCheck then
+        if (containsEmptySpace destCell) then
+            ValidMov
+        else
+            if (containsTrash destCell && isValidPush mv destLoc env) then
+                ValidPush
+            else
+                InvalidMov
+    else
+        InvalidMov
     where 
         destLoc = getLocationAfterMovement mv loc  
         destCell = getCellAtLocation destLoc env
         nextDestLoc = getLocationAfterMovement mv destLoc 
         nextDestCell = getCellAtLocation nextDestLoc
+        boundsCheck = (isWithinEnvironment loc env) && 
+                      (isWithinEnvironment destLoc env) && 
+                      (not (containsWall destCell)) && 
+                      (not (containsPlayer destCell)) 
 
 -- Returns True if the pushing behavior from the given location in the given direction of movement
 -- is valid; False otherwise. Currently non-recursive.
