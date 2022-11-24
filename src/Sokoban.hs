@@ -1,4 +1,4 @@
--- Data types, world rules
+-- The main file for the underlying logic of the game.
 module Sokoban
 (
     GameObject(..),
@@ -6,17 +6,17 @@ module Sokoban
     Cell(..),
     Environment,
     Movement(..),
+    MoveStatus(..),
     move,
     sampleLevel,
     emptyCell,
     playerCell,
     wallCell,
     trashCell,
-    isValidMove
+    isValidMove,
 )
     where
 import Data.Matrix
-import Data.List
 import qualified Data.Vector (length) 
 import qualified Data.Ix (inRange)
 
@@ -120,8 +120,6 @@ isValidMove mv loc env = if boundsCheck then ValidMov else InvalidMov
     where 
         destLoc = getLocationAfterMovement mv loc  
         destCell = getCellAtLocation destLoc env
-        nextDestLoc = getLocationAfterMovement mv destLoc 
-        nextDestCell = getCellAtLocation nextDestLoc
         boundsCheck = (isWithinEnvironment loc env) && 
                       (isWithinEnvironment destLoc env) && 
                       (not (containsWall destCell)) && 
