@@ -34,7 +34,8 @@ app = App
   }
 
 -- Apply a function to a level's environment
-applyMoveLevel f lvl = (fst lvl, f (snd lvl))
+applyMoveLevel ::  (Environment -> Environment) -> Level -> Level
+applyMoveLevel f lvl = MkLevel {levelNum = levelNum lvl, env = f (env lvl)}
 
 handleEvent :: Level -> BrickEvent Name e -> EventM Name (Next Level)
 -- (Esc, q) key to quit
@@ -66,7 +67,7 @@ attributes = attrMap V.defAttr [(attrName "player", fg V.cyan)]
 drawGrid :: Level -> [Widget Name]
 drawGrid lvl = [renderTable (setDefaultRowAlignment AlignMiddle $
     setDefaultColAlignment AlignCenter $
-    convertMap2Table (snd lvl))]
+    convertMap2Table (env lvl))]
 
 
 cell2string Player = "P"

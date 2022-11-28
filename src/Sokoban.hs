@@ -4,7 +4,7 @@ module Sokoban
     GameObject(..),
     Background(..),
     Cell(..),
-    Level,
+    Level(..),
     Environment,
     Movement(..),
     move,
@@ -38,7 +38,12 @@ data Cell = MkCell {
     deriving (Eq, Show)
 
 -- Level number and its environment
-type Level = (Int, Environment)
+data Level = MkLevel {
+    levelNum :: Int,
+    env :: Environment
+}
+
+-- type Level = (Int, Environment)
 
 -- The representation of an individual level
 type Environment = Matrix Cell
