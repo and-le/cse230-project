@@ -1,6 +1,4 @@
--- UI, event handlers 
-{-# LANGUAGE OverloadedStrings #-}
-
+-- The main file for the interface between the underlying game and Brick.
 module Game where 
 
 import Data.Matrix 
