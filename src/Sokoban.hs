@@ -3,6 +3,7 @@ module Sokoban
   ( GameObject(..)
   , Background(..)
   , Cell(..)
+  , Level(..)
   , Environment
   , Movement(..)
   , MoveStatus(..)
@@ -46,6 +47,15 @@ data Cell =
 -- Override default show for Cells to make display more compact.
 instance Show Cell where
   show (Cell gameObject background) = show gameObject ++ ":" ++ show background
+
+-- Level number and its environment
+data Level = MkLevel {
+    levelNum :: Int,
+    env :: Environment,
+    exit :: Bool
+}
+
+-- type Level = (Int, Environment)
 
 -- The representation of an individual level
 type Environment = Matrix Cell

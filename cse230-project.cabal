@@ -14,7 +14,8 @@ cabal-version:       >=1.10
 library
   ghc-options:        -W
   exposed-modules:     Sokoban,
-                       Game
+                       Game,
+                       LevelSelect
   build-depends:       base,
                        brick,
                        matrix,
