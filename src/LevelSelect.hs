@@ -2,7 +2,8 @@
 module LevelSelect
 (
     levelSelect,
-    resetLevel
+    resetLevel,
+    max_level
 )
     where
 import Sokoban
@@ -39,15 +40,17 @@ ui =
     $ foldl (<=>) (str "Level Select:") levels_list
 
 ---- Level Definitions
+max_level :: Int
+max_level = 2
 -- Empty Level
 empty_lvl :: Level
-empty_lvl = MkLevel {levelNum=(-1), env=empty_lvl_env}
+empty_lvl = MkLevel {levelNum=(-1), env=empty_lvl_env, exit=False}
 empty_lvl_env :: Environment
 empty_lvl_env = Data.Matrix.fromLists [[playerCell]]
 
 -- Level 0
 level_0 :: Level
-level_0 = MkLevel {levelNum=(0), env=level_0_env}
+level_0 = MkLevel {levelNum=(0), env=level_0_env, exit=False}
 level_0_env :: Environment
 level_0_env = Data.Matrix.fromLists [[emptyCell , emptyCell     , wallCell       , emptyCell]
                         ,[emptyCell , trashCell   , trashCell      , wallCell]
@@ -57,7 +60,7 @@ level_0_env = Data.Matrix.fromLists [[emptyCell , emptyCell     , wallCell      
 
 -- Level 1
 level_1 :: Level
-level_1 = MkLevel {levelNum=(1), env=level_1_env}
+level_1 = MkLevel {levelNum=(1), env=level_1_env, exit=False}
 level_1_env :: Environment
 level_1_env = Data.Matrix.fromLists [[trashCell , trashCell     , wallCell       , emptyCell]
                         ,[emptyCell , trashCell   , trashCell      , wallCell]
@@ -67,7 +70,7 @@ level_1_env = Data.Matrix.fromLists [[trashCell , trashCell     , wallCell      
 
 -- Level 2
 level_2 :: Level
-level_2 = MkLevel {levelNum=(2), env=level_2_env}
+level_2 = MkLevel {levelNum=(2), env=level_2_env, exit=False}
 level_2_env :: Environment
 level_2_env = Data.Matrix.fromLists [[wallCell , wallCell     , wallCell       , emptyCell]
                         ,[emptyCell , trashCell   , trashCell      , wallCell]

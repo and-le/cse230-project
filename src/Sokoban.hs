@@ -40,7 +40,8 @@ data Cell = MkCell {
 -- Level number and its environment
 data Level = MkLevel {
     levelNum :: Int,
-    env :: Environment
+    env :: Environment,
+    exit :: Bool
 }
 
 -- type Level = (Int, Environment)
