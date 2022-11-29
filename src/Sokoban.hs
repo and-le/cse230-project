@@ -16,6 +16,8 @@ module Sokoban
   , stashCell
   , isValidMove
   , getTrashCount
+  , moveLevel
+  , isLevelComplete
   ) where
 
 import qualified Data.Ix (inRange)
@@ -54,10 +56,9 @@ instance Show Cell where
 data Level = MkLevel {
     levelNum :: Int,
     env :: Environment,
+    trashCount :: Int,
     exit :: Bool
 }
-
--- type Level = (Int, Environment)
 
 -- The representation of an individual level
 type Environment = Matrix Cell
@@ -108,6 +109,18 @@ sampleLevel =
     , [emptyCell, trashCell, trashCell, playerCell]
     , [wallCell, wallCell, wallCell, emptyCell]
     ]
+
+-- Returns True if the given level is in a completed state; False otherwise
+isLevelComplete :: Level -> Bool 
+isLevelComplete lvl = trashCount lvl == 0
+ 
+-- Wrapper function around the regular `move` that will update game state after
+-- the movement. Currently the count of trash left is updated.
+moveLevel :: Movement -> Level -> Level 
+moveLevel mv lvl = MkLevel {levelNum=levelNum lvl, env=newEnv, trashCount=newTrashCount, exit=False}
+  where 
+    newEnv = move mv (env lvl)
+    newTrashCount = getTrashCount newEnv 
 
 -- handle state change for motions
 move :: Movement -> Environment -> Environment
