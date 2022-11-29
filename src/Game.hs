@@ -93,7 +93,7 @@ handleLevelExit lvl =
           return (resetLevel MkLevel {levelNum = (levelNum lvl + 1)})
       else 
         do 
-          defaultMain appComplete lvl 
+          defaultMain appComplete (MkLevel {exit = True}) 
       
 
 -- UI for exiting Raccoon Rush
@@ -123,7 +123,7 @@ completeUI =
 
 handleAppExit :: Level -> BrickEvent () e -> EventM Name (Next Level)
 handleAppExit lvl (VtyEvent (V.EvKey V.KEsc [])) = halt lvl
-handleAppExit lvl _                              = continue lvl
+handleAppExit lvl _                              = halt lvl
 
 appExit :: App Level e Name
 appExit = App
@@ -152,7 +152,7 @@ appIntermission = App
 
 handleAppComplete :: Level -> BrickEvent () e -> EventM Name (Next Level)
 handleAppComplete lvl (VtyEvent (V.EvKey V.KEsc [])) = halt lvl
-handleAppComplete lvl _ = continue lvl
+handleAppComplete lvl _ = halt lvl
 
 appComplete :: App Level e Name
 appComplete = App
@@ -182,8 +182,8 @@ mainLoop lvl = do
       exitedLevel <- defaultMain app lvl
       -- Handle exiting from a level
       nextLevel <- handleLevelExit exitedLevel 
-      -- Check if the player has completed the game or exited
-      if (levelNum nextLevel > max_level || exit nextLevel)
+      -- Check has exited
+      if (exit nextLevel)
         then 
           return ()
       else 
