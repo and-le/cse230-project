@@ -15,9 +15,11 @@ module Sokoban
   , trashCell
   , stashCell
   , isValidMove
+  , getTrashCount
   ) where
 
 import qualified Data.Ix (inRange)
+import qualified Data.List (length, filter)
 import Data.Matrix
 import qualified Data.Vector (length)
 
@@ -144,6 +146,10 @@ moveHelper mv fromLoc env = newEnv'
         then moveHelper mv toLoc env
         else env
     newEnv' = setElem toElem' toLoc (setElem fromElem' fromLoc newEnv)
+
+-- Returns the count of Trash objects in the given Environment.
+getTrashCount :: Environment -> Int 
+getTrashCount env = Data.List.length (Data.List.filter (\cell -> gameObject cell == Trash) (toList env))
 
 -- Returns True if the given location in the environment contains a stash; False otherwise.
 containsStash :: Location -> Environment -> Bool
