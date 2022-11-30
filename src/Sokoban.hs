@@ -15,9 +15,13 @@ module Sokoban
   , trashCell
   , stashCell
   , isValidMove
+  , getTrashCount
+  , moveLevel
+  , isLevelComplete
   ) where
 
 import qualified Data.Ix (inRange)
+import qualified Data.List (length, filter)
 import Data.Matrix
 import qualified Data.Vector (length)
 
@@ -52,10 +56,9 @@ instance Show Cell where
 data Level = MkLevel {
     levelNum :: Int,
     env :: Environment,
+    trashCount :: Int,
     exit :: Bool
 }
-
--- type Level = (Int, Environment)
 
 -- The representation of an individual level
 type Environment = Matrix Cell
@@ -107,6 +110,18 @@ sampleLevel =
     , [wallCell, wallCell, wallCell, emptyCell]
     ]
 
+-- Returns True if the given level is in a completed state; False otherwise
+isLevelComplete :: Level -> Bool 
+isLevelComplete lvl = trashCount lvl == 0
+ 
+-- Wrapper function around the regular `move` that will update game state after
+-- the movement. Currently the count of trash left is updated.
+moveLevel :: Movement -> Level -> Level 
+moveLevel mv lvl = MkLevel {levelNum=levelNum lvl, env=newEnv, trashCount=newTrashCount, exit=False}
+  where 
+    newEnv = move mv (env lvl)
+    newTrashCount = getTrashCount newEnv 
+
 -- handle state change for motions
 move :: Movement -> Environment -> Environment
 move mv start =
@@ -144,6 +159,10 @@ moveHelper mv fromLoc env = newEnv'
         then moveHelper mv toLoc env
         else env
     newEnv' = setElem toElem' toLoc (setElem fromElem' fromLoc newEnv)
+
+-- Returns the count of Trash objects in the given Environment.
+getTrashCount :: Environment -> Int 
+getTrashCount env = Data.List.length (Data.List.filter (\cell -> gameObject cell == Trash) (toList env))
 
 -- Returns True if the given location in the environment contains a stash; False otherwise.
 containsStash :: Location -> Environment -> Bool

@@ -44,38 +44,54 @@ max_level :: Int
 max_level = 2
 -- Empty Level
 empty_lvl :: Level
-empty_lvl = MkLevel {levelNum=(-1), env=empty_lvl_env, exit=False}
+empty_lvl = MkLevel {levelNum=(-1), env=empty_lvl_env, trashCount=(-1), exit=False}
 empty_lvl_env :: Environment
 empty_lvl_env = Data.Matrix.fromLists [[playerCell]]
 
 -- Level 0
 level_0 :: Level
-level_0 = MkLevel {levelNum=(0), env=level_0_env, exit=False}
+level_0 = MkLevel {levelNum=(0), env=level_0_env, trashCount=getTrashCount level_0_env, exit=False}
 level_0_env :: Environment
-level_0_env = Data.Matrix.fromLists [[emptyCell , emptyCell     , wallCell       , emptyCell]
-                        ,[emptyCell , trashCell   , trashCell      , wallCell]
-                        ,[emptyCell, trashCell , playerCell , wallCell]
-                        ,[wallCell , wallCell     , wallCell       , emptyCell]
+-- level_0_env = Data.Matrix.fromLists [[emptyCell , emptyCell     , wallCell       , emptyCell]
+--                         ,[emptyCell , trashCell   , trashCell      , wallCell]
+--                         ,[emptyCell, trashCell , playerCell , wallCell]
+--                         ,[wallCell , wallCell     , wallCell       , emptyCell]
+--                         ]
+
+level_0_env = Data.Matrix.fromLists [[emptyCell , emptyCell, emptyCell]
+                        ,[stashCell , trashCell   , playerCell]
+                        ,[emptyCell, emptyCell , emptyCell]
                         ]
 
 -- Level 1
 level_1 :: Level
-level_1 = MkLevel {levelNum=(1), env=level_1_env, exit=False}
+level_1 = MkLevel {levelNum=(1), env=level_1_env, trashCount=getTrashCount level_1_env, exit=False}
 level_1_env :: Environment
-level_1_env = Data.Matrix.fromLists [[trashCell , trashCell     , wallCell       , emptyCell]
-                        ,[emptyCell , trashCell   , trashCell      , wallCell]
-                        ,[emptyCell, trashCell , playerCell , wallCell]
-                        ,[wallCell , wallCell     , wallCell       , emptyCell]
+-- level_1_env = Data.Matrix.fromLists [[trashCell , trashCell     , wallCell       , emptyCell]
+--                         ,[emptyCell , trashCell   , trashCell      , wallCell]
+--                         ,[emptyCell, trashCell , playerCell , wallCell]
+--                         ,[wallCell , wallCell     , wallCell       , emptyCell]
+--                         ]
+
+level_1_env = Data.Matrix.fromLists [[emptyCell , emptyCell, emptyCell]
+                        ,[playerCell , trashCell   , stashCell]
+                        ,[emptyCell, emptyCell , emptyCell]
                         ]
 
 -- Level 2
 level_2 :: Level
-level_2 = MkLevel {levelNum=(2), env=level_2_env, exit=False}
+level_2 = MkLevel {levelNum=(2), env=level_2_env, trashCount=getTrashCount level_2_env, exit=False}
 level_2_env :: Environment
-level_2_env = Data.Matrix.fromLists [[wallCell , wallCell     , wallCell       , emptyCell]
-                        ,[emptyCell , trashCell   , trashCell      , wallCell]
-                        ,[emptyCell, trashCell , playerCell , wallCell]
-                        ,[wallCell , wallCell     , wallCell       , emptyCell]
+-- level_2_env = Data.Matrix.fromLists [[wallCell , wallCell     , wallCell       , emptyCell]
+--                         ,[emptyCell , trashCell   , trashCell      , wallCell]
+--                         ,[emptyCell, trashCell , playerCell , wallCell]
+--                         ,[wallCell , wallCell     , wallCell       , emptyCell]
+--                         ]
+
+
+level_2_env = Data.Matrix.fromLists [[emptyCell , playerCell, emptyCell]
+                        ,[emptyCell , trashCell   , stashCell]
+                        ,[emptyCell, stashCell , emptyCell]
                         ]
 
 -- Event Handling for Level Select Screen
