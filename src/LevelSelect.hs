@@ -17,27 +17,52 @@ import qualified Data.Matrix
 
 type Name = ()
 
-app :: App Level e Name
+-- datatype to store level select screen state
+data Selector = MkSelector {
+  highlighted :: Int
+}
+
+app :: App Selector e Name
 app = App
-  { appDraw         = const [ui]
+  { appDraw         = drawUI
   , appHandleEvent  = handleEvent
   , appStartEvent   = return
-  , appAttrMap      = const $ attrMap V.defAttr []
+  , appAttrMap      = const lvlAttrMap
   , appChooseCursor = neverShowCursor
   }
 
+-- opening screen state
+default_selector :: Selector
+default_selector = MkSelector {highlighted=0}
+
 -- Level Select List for Display
-levels = ["Level 0", "Level 1", "Level 2"]
+levels = [("Level 0",0), ("Level 1",1), ("Level 2",2)]
 concat_bullet = ("-" ++)
-levels_list = map str (map (concat_bullet) levels)
+
+levels_list i = map drawOptions levels
+  where
+    drawOptions (s,l) = if l==i then
+                            withAttr (attrName "selected") $ str ("->" ++ s) 
+                        else
+                            str (concat_bullet s)
+
 
 -- Level Select UI
-ui :: Widget ()
-ui =
-    C.center
-    $ withBorderStyle BS.unicodeBold
-    $ B.borderWithLabel (str "Raccoon Rush")
-    $ foldl (<=>) (str "Level Select:") levels_list
+drawUI :: Selector -> [Widget ()]
+drawUI env =
+    [ C.center $ vBox
+      [ C.center 
+          $ withBorderStyle BS.unicodeBold
+          $ B.borderWithLabel (str "Raccoon Rush")
+          $ foldl (<=>) (str "Level Select:") (levels_list (highlighted env))
+        , str "Use arrow and enter keys, or type the number to select a level, esc/q to exit"
+      ]
+    ]
+
+-- Level Select Attr map
+lvlAttrMap :: AttrMap
+lvlAttrMap = attrMap V.defAttr
+  [ (attrName "selected", fg V.blue `V.withStyle` V.bold) ]
 
 ---- Level Definitions
 max_level :: Int
@@ -95,7 +120,7 @@ level_2_env = Data.Matrix.fromLists [[emptyCell , playerCell, emptyCell]
                         ]
 
 -- Event Handling for Level Select Screen
-handleEvent :: Level -> BrickEvent () e -> EventM Name (Next Level)
+handleEvent :: Selector -> BrickEvent () e -> EventM Name (Next Selector)
 -- Exiting Level Select
 handleEvent env (VtyEvent (V.EvKey V.KEsc [])) = halt env
 handleEvent env (VtyEvent (V.EvKey (V.KChar 'q') [])) = halt env
@@ -104,21 +129,43 @@ handleEvent env (VtyEvent (V.EvKey (V.KChar d) [])) =
   if d `elem` ['0' .. '2'] then
     do
         case read [d] of
-            0 -> halt $ level_0
-            1 -> halt $ level_1
-            2 -> halt $ level_2
+            0 -> halt $ MkSelector {highlighted=0}
+            1 -> halt $ MkSelector {highlighted=1}
+            2 -> halt $ MkSelector {highlighted=2}
             _ -> continue env
   else continue env
+handleEvent env (VtyEvent (V.EvKey V.KUp []))  = continue $ cursorUp
+  where
+    l = highlighted env
+    cursorUp = if l > 0 then
+                 MkSelector {highlighted=l-1}
+               else
+                 MkSelector {highlighted=l}
+handleEvent env (VtyEvent (V.EvKey V.KDown []))= continue $ cursorDown
+  where
+    l = highlighted env
+    cursorDown = if (l < (length levels)-1) then
+                   MkSelector {highlighted=l+1}
+                 else
+                   MkSelector {highlighted=l}
+handleEvent env (VtyEvent (V.EvKey V.KEnter []))= halt env
 handleEvent env _                              = continue env
 
 -- Level Select Screen
-levelSelect = defaultMain app empty_lvl
+levelSelect :: IO Level
+levelSelect = do 
+                l <- defaultMain app default_selector
+                return (intToLvl (highlighted l))
 
--- Resets level to its original start position
-resetLevel :: Level -> Level
-resetLevel lvl =
-    case (levelNum lvl) of
+-- go from an Int to a level
+intToLvl :: Int -> Level
+intToLvl i =
+    case i of
         0 -> level_0
         1 -> level_1
         2 -> level_2
         _ -> empty_lvl
+
+-- Resets level to its original start position
+resetLevel :: Level -> Level
+resetLevel lvl = intToLvl (levelNum lvl)
