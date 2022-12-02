@@ -50,11 +50,12 @@ levels_list i = map drawOptions levels
 -- Level Select UI
 drawUI :: Selector -> [Widget ()]
 drawUI env =
-    [ C.center $ vBox
+    [ vBox
       [ C.center 
           $ withBorderStyle BS.unicodeBold
           $ B.borderWithLabel (str "Raccoon Rush")
-          $ foldl (<=>) (str "Level Select:") (levels_list (highlighted env))
+          $ vBox
+          [ padLeftRight 3 $ padTopBottom 1 $ foldl (<=>) (str "Level Select:") (levels_list (highlighted env))]
         , str "Use arrow and enter keys, or type the number to select a level, esc/q to exit"
       ]
     ]
@@ -122,8 +123,8 @@ level_2_env = Data.Matrix.fromLists [[emptyCell , playerCell, emptyCell]
 -- Event Handling for Level Select Screen
 handleEvent :: Selector -> BrickEvent () e -> EventM Name (Next Selector)
 -- Exiting Level Select
-handleEvent env (VtyEvent (V.EvKey V.KEsc [])) = halt env
-handleEvent env (VtyEvent (V.EvKey (V.KChar 'q') [])) = halt env
+handleEvent env (VtyEvent (V.EvKey V.KEsc [])) = halt $ MkSelector {highlighted = -1}
+handleEvent env (VtyEvent (V.EvKey (V.KChar 'q') [])) = halt $ MkSelector {highlighted = -1}
 -- Level Select Event
 handleEvent env (VtyEvent (V.EvKey (V.KChar d) [])) =
   if d `elem` ['0' .. '2'] then
@@ -164,7 +165,7 @@ intToLvl i =
         0 -> level_0
         1 -> level_1
         2 -> level_2
-        _ -> empty_lvl
+        _ -> MkLevel {levelNum = -1, env = empty_lvl_env, trashCount = -1, exit = True}
 
 -- Resets level to its original start position
 resetLevel :: Level -> Level
