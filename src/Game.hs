@@ -68,7 +68,7 @@ attributes = attrMap V.defAttr [(attrName "player", fg V.cyan)]
 
 drawGrid :: Level -> [Widget Name]
 drawGrid lvl = [center $
-    B.borderWithLabel (str "Raccoon Rush") $
+    B.borderWithLabel (str (" Level " ++ show (levelNum lvl) ++ " - " ++ name lvl ++ " ")) $
     renderTable (setDefaultRowAlignment AlignMiddle $
     setDefaultColAlignment AlignCenter $
     convertMap2Table (env lvl))]
@@ -96,15 +96,15 @@ handleLevelExit lvl =
       then
         do
           level <- levelSelect
-          return (MkLevel {levelNum = (levelNum level), exit=False, selectlvl=True})
+          return (MkLevel {name="", levelNum = (levelNum level), exit=False, selectlvl=True})
       else
         if levelNum lvl < max_level 
           then 
             do 
-              return (resetLevel MkLevel {levelNum = (levelNum lvl + 1)})
+              return (resetLevel MkLevel {name="", levelNum = (levelNum lvl + 1)})
           else 
             do 
-              defaultMain appComplete (MkLevel {exit = True}) 
+              defaultMain appComplete (MkLevel {name="", exit = True}) 
 
 
 -- UI for exiting Raccoon Rush
