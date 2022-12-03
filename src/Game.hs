@@ -6,7 +6,7 @@ import Data.Text (pack)
 
 import Brick (
                App(..), BrickEvent(..), EventM, Widget, Next,
-               (<+>), str, withBorderStyle, emptyWidget,
+               (<+>), str, withBorderStyle, emptyWidget, padLeftRight,
                neverShowCursor, vBox, defaultMain, txt, continue, halt
              )
 import Brick.AttrMap
@@ -67,18 +67,20 @@ attributes :: AttrMap
 attributes = attrMap V.defAttr [(attrName "player", fg V.cyan)]
 
 drawGrid :: Level -> [Widget Name]
-drawGrid lvl = [renderTable (setDefaultRowAlignment AlignMiddle $
+drawGrid lvl = [center $
+    B.borderWithLabel (str "Raccoon Rush") $
+    renderTable (setDefaultRowAlignment AlignMiddle $
     setDefaultColAlignment AlignCenter $
     convertMap2Table (env lvl))]
 
 cell2string :: GameObject -> String 
-cell2string Player = "P"
+cell2string Player = "𓃠"
 cell2string Empty = " "
-cell2string Trash = "T"
-cell2string Wall = "W"
+cell2string Trash = "◌"
+cell2string Wall = "▩"
 
 convertMap2Table :: Environment -> Table n
-convertMap2Table m = table (map (map (\x -> txt (pack (cell2string x)))) $ (map (map gameObject) (toLists m)))
+convertMap2Table m = table (map (map (\x -> padLeftRight 1 (txt (pack (cell2string x))))) $ (map (map gameObject) (toLists m)))
 
 -- Handles the exiting of a level.
 -- If `exit` is True, calls `appExit`.
