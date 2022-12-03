@@ -237,11 +237,11 @@ getPlayerLocation env =
 
 -- Returns the number of rows for the given rectangular matrix.
 getNumRows :: Matrix a -> Int
-getNumRows mat = Data.Vector.length (getRow 1 mat)
+getNumRows mat = Data.Vector.length (getCol 1 mat)
 
 -- Returns the number of columns for the given rectangular matrix.
 getNumCols :: Matrix a -> Int
-getNumCols mat = Data.Vector.length (getCol 1 mat)
+getNumCols mat = Data.Vector.length (getRow 1 mat)
 
 -- Returns the first-occuring index of an element within the matrix that satisfies the given predicate;
 -- Nothing if the element was not found.
