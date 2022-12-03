@@ -56,6 +56,7 @@ instance Show Cell where
 -- Level number and its environment
 data Level = MkLevel {
     levelNum :: Int,
+    name :: String,
     env :: Environment,
     trashCount :: Int,
     exit :: Bool,

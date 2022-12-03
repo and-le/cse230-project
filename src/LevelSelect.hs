@@ -37,16 +37,16 @@ default_selector = MkSelector {highlighted=0}
 
 -- Level Select List for Display
 levels = [
-    ("Level 0",0), 
-    ("Level 1",1), 
-    ("Level 2",2),
-    ("Level 3",3),
-    ("Level 4",4),
-    ("Level 5",5),
-    ("Level 6",6),
-    ("Level 7",7),
-    ("Level 8",8),
-    ("Level 9",9)
+    ("Level 0 - " ++ name level_0, 0), 
+    ("Level 1 - " ++ name level_1, 1), 
+    ("Level 2 - " ++ name level_2, 2),
+    ("Level 3 - " ++ name level_3, 3),
+    ("Level 4 - " ++ name level_4, 4),
+    ("Level 5 - " ++ name level_5, 5),
+    ("Level 6 - " ++ name level_6, 6),
+    ("Level 7 - " ++ name level_7, 7),
+    ("Level 8 - " ++ name level_8, 8),
+    ("Level 9 - " ++ name level_9, 9)
   ]
 concat_bullet = ("-" ++)
 
@@ -86,13 +86,13 @@ max_level = 9
 
 -- Empty Level
 empty_lvl :: Level
-empty_lvl = MkLevel {levelNum=(-1), env=empty_lvl_env, trashCount=(-1), exit=False, selectlvl=False}
+empty_lvl = MkLevel {name="Empty", levelNum=(-1), env=empty_lvl_env, trashCount=(-1), exit=False, selectlvl=False}
 empty_lvl_env :: Environment
 empty_lvl_env = Data.Matrix.fromLists [[playerCell]]
 
 -- Level 0
 level_0 :: Level
-level_0 = MkLevel {levelNum=(0), env=level_0_env, trashCount=getTrashCount level_0_env, exit=False, selectlvl=False}
+level_0 = MkLevel {name="Trash to Stash", levelNum=(0), env=level_0_env, trashCount=getTrashCount level_0_env, exit=False, selectlvl=False}
 level_0_env :: Environment
 
 level_0_env = Data.Matrix.fromLists [
@@ -103,7 +103,7 @@ level_0_env = Data.Matrix.fromLists [
 
 -- Level 1
 level_1 :: Level
-level_1 = MkLevel {levelNum=(1), env=level_1_env, trashCount=getTrashCount level_1_env, exit=False, selectlvl=False}
+level_1 = MkLevel {name="Geisel", levelNum=(1), env=level_1_env, trashCount=getTrashCount level_1_env, exit=False, selectlvl=False}
 level_1_env :: Environment
 level_1_env = Data.Matrix.fromLists [
     [emptyCell, emptyCell, emptyCell, wallCell, wallCell, emptyCell, emptyCell, emptyCell],
@@ -118,7 +118,7 @@ level_1_env = Data.Matrix.fromLists [
 
 -- Level 2
 level_2 :: Level
-level_2 = MkLevel {levelNum=(2), env=level_2_env, trashCount=getTrashCount level_2_env, exit=False, selectlvl=False}
+level_2 = MkLevel {name="The Labs", levelNum=(2), env=level_2_env, trashCount=getTrashCount level_2_env, exit=False, selectlvl=False}
 level_2_env :: Environment
 level_2_env = Data.Matrix.fromLists [
     [emptyCell, emptyCell, emptyCell, wallCell, emptyCell, emptyCell, emptyCell, emptyCell],
@@ -133,7 +133,7 @@ level_2_env = Data.Matrix.fromLists [
 
 -- Level 3
 level_3 :: Level
-level_3 = MkLevel {levelNum=(3), env=level_3_env, trashCount=getTrashCount level_3_env, exit=False, selectlvl=False}
+level_3 = MkLevel {name="The Dungeon", levelNum=(3), env=level_3_env, trashCount=getTrashCount level_3_env, exit=False, selectlvl=False}
 level_3_env :: Environment
 level_3_env = Data.Matrix.fromLists [
     [emptyCell, emptyCell, emptyCell, wallCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell],
@@ -147,7 +147,7 @@ level_3_env = Data.Matrix.fromLists [
 
 -- Level 4
 level_4 :: Level
-level_4 = MkLevel {levelNum=(4), env=level_4_env, trashCount=getTrashCount level_4_env, exit=False, selectlvl=False}
+level_4 = MkLevel {name="Choo-choo!", levelNum=(4), env=level_4_env, trashCount=getTrashCount level_4_env, exit=False, selectlvl=False}
 level_4_env :: Environment
 level_4_env = Data.Matrix.fromLists [
     [playerCell, emptyCell, trashCell, emptyCell, trashCell, emptyCell, trashCell, emptyCell, trashCell, emptyCell, emptyCell]
@@ -159,7 +159,7 @@ level_4_env = Data.Matrix.fromLists [
 
 -- Level 5
 level_5 :: Level
-level_5 = MkLevel {levelNum=(5), env=level_5_env, trashCount=getTrashCount level_5_env, exit=False, selectlvl=False}
+level_5 = MkLevel {name="I like trolleys", levelNum=(5), env=level_5_env, trashCount=getTrashCount level_5_env, exit=False, selectlvl=False}
 level_5_env :: Environment
 level_5_env = Data.Matrix.fromLists [
     [stashCell, wallCell, emptyCell, wallCell, emptyCell, emptyCell, trashCell, stashCell],
@@ -174,7 +174,7 @@ level_5_env = Data.Matrix.fromLists [
 
 -- Level 6
 level_6 :: Level
-level_6 = MkLevel {levelNum=(6), env=level_6_env, trashCount=getTrashCount level_6_env, exit=False, selectlvl=False}
+level_6 = MkLevel {name="So close, yet so far", levelNum=(6), env=level_6_env, trashCount=getTrashCount level_6_env, exit=False, selectlvl=False}
 level_6_env :: Environment
 level_6_env = Data.Matrix.fromLists [
     [emptyCell, emptyCell, emptyCell, trashCell, trashCell, emptyCell, emptyCell, emptyCell],
@@ -189,7 +189,7 @@ level_6_env = Data.Matrix.fromLists [
 
 -- Level 7
 level_7 :: Level
-level_7 = MkLevel {levelNum=(7), env=level_7_env, trashCount=getTrashCount level_7_env, exit=False, selectlvl=False}
+level_7 = MkLevel {name="Lining up", levelNum=(7), env=level_7_env, trashCount=getTrashCount level_7_env, exit=False, selectlvl=False}
 level_7_env :: Environment
 level_7_env = Data.Matrix.fromLists [
     [emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, wallCell],
@@ -204,7 +204,7 @@ level_7_env = Data.Matrix.fromLists [
 
 -- Level 8
 level_8 :: Level
-level_8 = MkLevel {levelNum=(8), env=level_8_env, trashCount=getTrashCount level_8_env, exit=False, selectlvl=False}
+level_8 = MkLevel {name="Franklin-Antonio Hall", levelNum=(8), env=level_8_env, trashCount=getTrashCount level_8_env, exit=False, selectlvl=False}
 level_8_env :: Environment
 level_8_env = Data.Matrix.fromLists [
     [emptyCell, emptyCell, emptyCell, emptyCell, wallCell, emptyCell, emptyCell, emptyCell, emptyCell],
@@ -224,7 +224,7 @@ level_8_env = Data.Matrix.fromLists [
 
 -- Level 9
 level_9 :: Level
-level_9 = MkLevel {levelNum=(9), env=level_9_env, trashCount=getTrashCount level_9_env, exit=False, selectlvl=False}
+level_9 = MkLevel {name="Pepper Canyon", levelNum=(9), env=level_9_env, trashCount=getTrashCount level_9_env, exit=False, selectlvl=False}
 level_9_env :: Environment
 level_9_env = Data.Matrix.fromLists [
     [emptyCell, emptyCell, trashCell, trashCell, trashCell, trashCell, stashCell, emptyCell],
@@ -244,12 +244,19 @@ handleEvent env (VtyEvent (V.EvKey V.KEsc [])) = halt $ MkSelector {highlighted 
 handleEvent env (VtyEvent (V.EvKey (V.KChar 'q') [])) = halt $ MkSelector {highlighted = -1}
 -- Level Select Event
 handleEvent env (VtyEvent (V.EvKey (V.KChar d) [])) =
-  if d `elem` ['0' .. '2'] then
+  if d `elem` ['0' .. ((show max_level) !! 0)] then
     do
         case read [d] of
             0 -> halt $ MkSelector {highlighted=0}
             1 -> halt $ MkSelector {highlighted=1}
             2 -> halt $ MkSelector {highlighted=2}
+            3 -> halt $ MkSelector {highlighted=3}
+            4 -> halt $ MkSelector {highlighted=4}
+            5 -> halt $ MkSelector {highlighted=5}
+            6 -> halt $ MkSelector {highlighted=6}
+            7 -> halt $ MkSelector {highlighted=7}
+            8 -> halt $ MkSelector {highlighted=8}
+            9 -> halt $ MkSelector {highlighted=9}
             _ -> continue env
   else continue env
 handleEvent env (VtyEvent (V.EvKey V.KUp []))  = continue $ cursorUp
@@ -289,7 +296,7 @@ intToLvl i =
         7 -> level_7
         8 -> level_8
         9 -> level_9
-        _ -> MkLevel {levelNum = -1, env = empty_lvl_env, trashCount = -1, exit = True, selectlvl=False}
+        _ -> MkLevel {name="", levelNum = -1, env = empty_lvl_env, trashCount = -1, exit = True, selectlvl=False}
 
 -- Resets level to its original start position
 resetLevel :: Level -> Level
