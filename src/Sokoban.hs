@@ -18,6 +18,7 @@ module Sokoban
   , getTrashCount
   , moveLevel
   , isLevelComplete
+  , fromCells
   ) where
 
 import qualified Data.Ix (inRange)
@@ -261,3 +262,7 @@ findIndexMatrix mat predicate =
       | col > numCols = helper mat predicate numRows numCols (row + 1) 1 -- reached end of row
       | predicate (getElem row col mat) = Just (row, col)
       | otherwise = helper mat predicate numRows numCols row (col + 1)
+
+-- Creates an Environment from a grid of Cells 
+fromCells :: [[Cell]] -> Environment 
+fromCells cells = fromLists cells 
