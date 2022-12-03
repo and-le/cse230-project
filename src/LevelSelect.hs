@@ -153,10 +153,6 @@ level_4_env = Data.Matrix.fromLists [
     [playerCell, emptyCell, trashCell, emptyCell, trashCell, emptyCell, trashCell, emptyCell, trashCell, emptyCell, emptyCell]
   ]
 
-
--- 1x8
-    -- [emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell],
-
 -- Level 5
 level_5 :: Level
 level_5 = MkLevel {name="I like trolleys", levelNum=(5), env=level_5_env, trashCount=getTrashCount level_5_env, exit=False, selectlvl=False}
