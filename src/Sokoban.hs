@@ -148,7 +148,7 @@ moveHelper mv fromLoc env = newEnv'
     toElem' =
       Cell
         { gameObject =
-            (if (containsStash toLoc env)
+            (if (containsStash toLoc env) && (gameObject fromElem == Trash)
                then Empty
                else gameObject fromElem)
         , background = (background toElem)

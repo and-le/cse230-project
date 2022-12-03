@@ -65,6 +65,15 @@ level5 =
 
 level5Loc = (1, 3)
 
+level6 =
+  Data.Matrix.fromLists
+    [ [emptyCell, emptyCell, wallCell]
+    , [playerCell, emptyCell, emptyCell]
+    , [stashCell, trashCell, emptyCell]
+    ]
+
+level6Loc = (2, 1)
+
 test1 =
   testCase "Validate movement to an empty cell" $
   (isValidMove DownMv level1Loc level1) @?= ValidMov
@@ -134,7 +143,26 @@ test11 =
   testCase "Get amount of trash in level" $
   (getTrashCount level1) @?= 3
 
+test12 =
+  testCase "Player moves into stash" $
+  (move DownMv level6) @?=
+  Data.Matrix.fromLists
+    [ [emptyCell, emptyCell, wallCell]
+    , [emptyCell, emptyCell, emptyCell]
+    , [Cell {gameObject=Player, background=Stash}, trashCell, emptyCell]
+    ]
+
+test13 =
+  testCase "Player pushes trash into stash" $
+  move LeftMv (move DownMv (move RightMv (move RightMv level6))) @?=
+  Data.Matrix.fromLists
+    [ [emptyCell, emptyCell, wallCell]
+    , [emptyCell, emptyCell, emptyCell]
+    , [stashCell, playerCell, emptyCell]
+    ]
+
+
 unitTests =
   testGroup
     "Unit tests"
-    [test1, test2, test3, test4, test5, test6, test7, test8, test9, test10, test11]
+    [test1, test2, test3, test4, test5, test6, test7, test8, test9, test10, test11, test12, test13]
