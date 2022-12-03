@@ -35,11 +35,14 @@ app = App
 
 handleEvent :: Level -> BrickEvent Name e -> EventM Name (Next Level)
 -- (Esc, q) key to quit
-handleEvent lvl (VtyEvent (V.EvKey V.KEsc [])) = halt MkLevel {levelNum = -1, env = env lvl, trashCount = -1, exit = True}
-handleEvent lvl (VtyEvent (V.EvKey (V.KChar 'q') [])) = halt MkLevel {levelNum = -1, env = env lvl, trashCount = -1, exit = True}
+handleEvent lvl (VtyEvent (V.EvKey V.KEsc [])) = halt MkLevel {levelNum = -1, env = env lvl, trashCount = -1, exit = True, selectlvl = False}
+handleEvent lvl (VtyEvent (V.EvKey (V.KChar 'q') [])) = halt MkLevel {levelNum = -1, env = env lvl, trashCount = -1, exit = True, selectlvl = False}
 handleEvent lvl (VtyEvent (V.EvKey (V.KChar 'n') [])) = halt lvl
 -- Reset Level
 handleEvent lvl (VtyEvent (V.EvKey (V.KChar 'r') [])) = continue $ resetLevel lvl
+
+-- Go back to level select
+handleEvent lvl (VtyEvent (V.EvKey V.KBS [])) = halt MkLevel {levelNum = -1, env = env lvl, trashCount = -1, exit = False, selectlvl=True}
 
 -- Player Movement. We first perform the movement and then check whether the level has been completed. If so,
 -- we halt.
@@ -87,14 +90,20 @@ handleLevelExit lvl =
     then 
       defaultMain appExit lvl 
   else 
-    if levelNum lvl < max_level 
-      then 
-        do 
-          return (resetLevel MkLevel {levelNum = (levelNum lvl + 1)})
-      else 
-        do 
-          defaultMain appComplete (MkLevel {exit = True}) 
-      
+    if selectlvl lvl
+      then
+        do
+          level <- levelSelect
+          return (MkLevel {levelNum = (levelNum level), exit=False, selectlvl=True})
+      else
+        if levelNum lvl < max_level 
+          then 
+            do 
+              return (resetLevel MkLevel {levelNum = (levelNum lvl + 1)})
+          else 
+            do 
+              defaultMain appComplete (MkLevel {exit = True}) 
+
 
 -- UI for exiting Raccoon Rush
 exitUI :: Widget ()
@@ -175,7 +184,10 @@ mainLoop :: Level -> IO ()
 mainLoop lvl = do 
   if (exit lvl)
     then 
-      return () 
+      do
+        -- Handle exiting from a level
+        _ <- handleLevelExit lvl
+        return ()
   else 
     do 
       -- Transition to a level
@@ -186,9 +198,13 @@ mainLoop lvl = do
       if (exit nextLevel)
         then 
           return ()
-      else 
-        do 
-          -- Show an intermission screen
-          _ <- defaultMain appIntermission nextLevel
-          -- Start the next level
-          mainLoop nextLevel
+      else
+        if (selectlvl nextLevel)
+          then
+            mainLoop (resetLevel nextLevel)
+          else
+            do 
+              -- Show an intermission screen
+              _ <- defaultMain appIntermission nextLevel
+              -- Start the next level
+              mainLoop nextLevel
