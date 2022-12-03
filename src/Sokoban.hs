@@ -57,7 +57,8 @@ data Level = MkLevel {
     levelNum :: Int,
     env :: Environment,
     trashCount :: Int,
-    exit :: Bool
+    exit :: Bool,
+    selectlvl :: Bool
 }
 
 -- The representation of an individual level
@@ -117,7 +118,7 @@ isLevelComplete lvl = trashCount lvl == 0
 -- Wrapper function around the regular `move` that will update game state after
 -- the movement. Currently the count of trash left is updated.
 moveLevel :: Movement -> Level -> Level 
-moveLevel mv lvl = MkLevel {levelNum=levelNum lvl, env=newEnv, trashCount=newTrashCount, exit=False}
+moveLevel mv lvl = MkLevel {levelNum=levelNum lvl, env=newEnv, trashCount=newTrashCount, exit=False, selectlvl=False}
   where 
     newEnv = move mv (env lvl)
     newTrashCount = getTrashCount newEnv 
