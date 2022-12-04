@@ -234,7 +234,7 @@ containsTrash _ = False
 -- if the player is not present, returns (-1, -1).
 getPlayerLocation :: Environment -> Location
 getPlayerLocation env =
-  case findIndexMatrix env containsPlayer of
+  case findIndexEnvironment env containsPlayer of
     Just location -> location
     Nothing -> (-1, -1)
 
@@ -248,8 +248,8 @@ getNumCols env = ncols env
 
 -- Returns the first-occuring index of an element within the Environment that satisfies the given predicate;
 -- Nothing if the element was not found.
-findIndexMatrix :: Environment -> (Cell -> Bool) -> Maybe Location
-findIndexMatrix env predicate =
+findIndexEnvironment :: Environment -> (Cell -> Bool) -> Maybe Location
+findIndexEnvironment env predicate =
   helper env predicate (getNumRows env) (getNumCols env) 1 1
   where
     helper ::
