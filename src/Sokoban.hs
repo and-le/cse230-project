@@ -27,7 +27,6 @@ module Sokoban
 import qualified Data.Ix (inRange)
 import qualified Data.List (length, filter)
 import Data.Matrix
-import qualified Data.Vector (length)
 
 -- An object that the player can interact with in the game
 data GameObject
@@ -239,34 +238,33 @@ getPlayerLocation env =
     Just location -> location
     Nothing -> (-1, -1)
 
--- Returns the number of rows for the given rectangular matrix.
-getNumRows :: Matrix a -> Int
-getNumRows mat = nrows mat 
+-- Returns the number of rows for the given environment.
+getNumRows :: Environment -> Int
+getNumRows env = nrows env  
 
--- Returns the number of columns for the given rectangular matrix.
-getNumCols :: Matrix a -> Int
-getNumCols mat = ncols mat 
+-- Returns the number of columns for the given environment
+getNumCols :: Environment -> Int
+getNumCols env = ncols env 
 
--- Returns the first-occuring index of an element within the matrix that satisfies the given predicate;
+-- Returns the first-occuring index of an element within the Environment that satisfies the given predicate;
 -- Nothing if the element was not found.
-findIndexMatrix :: (Eq a) => Matrix a -> (a -> Bool) -> Maybe Location
-findIndexMatrix mat predicate =
-  helper mat predicate (getNumRows mat) (getNumCols mat) 1 1
+findIndexMatrix :: Environment -> (Cell -> Bool) -> Maybe Location
+findIndexMatrix env predicate =
+  helper env predicate (getNumRows env) (getNumCols env) 1 1
   where
     helper ::
-         (Eq a)
-      => Matrix a
-      -> (a -> Bool)
+      Matrix Cell
+      -> (Cell -> Bool)
       -> Int
       -> Int
       -> Int
       -> Int
       -> Maybe Location
-    helper mat predicate numRows numCols row col
+    helper env predicate numRows numCols row col
       | row > numRows = Nothing -- reached end of matrix without finding desired element
-      | col > numCols = helper mat predicate numRows numCols (row + 1) 1 -- reached end of row
-      | predicate (getElem row col mat) = Just (row, col)
-      | otherwise = helper mat predicate numRows numCols row (col + 1)
+      | col > numCols = helper env predicate numRows numCols (row + 1) 1 -- reached end of row
+      | predicate (getElem row col env) = Just (row, col)
+      | otherwise = helper env predicate numRows numCols row (col + 1)
 
 -- Creates an Environment from a grid of Cells 
 fromCells :: [[Cell]] -> Environment 
