@@ -7,10 +7,11 @@ import Data.Text (pack)
 import Brick (
                App(..), BrickEvent(..), EventM, Widget, Next,
                (<+>), str, withBorderStyle, emptyWidget, padLeftRight,
-               neverShowCursor, vBox, defaultMain, txt, continue, halt
+               neverShowCursor, vBox, defaultMain, txt, continue, halt,
+               withAttr
              )
 import Brick.AttrMap
-import Brick.Util (fg)
+import Brick.Util (fg, bg)
 import Brick.Widgets.Table
 import Brick.Widgets.Center (center)
 import Brick.Widgets.Border.Style (unicode)
@@ -64,7 +65,9 @@ handleEvent lvl _                              = continue lvl
 
 -- does nothing right now
 attributes :: AttrMap
-attributes = attrMap V.defAttr [(attrName "player", fg V.cyan)]
+attributes = attrMap V.defAttr [(attrName "stash_bg", bg V.green),
+                                (attrName "trashcan_bg", bg V.blue)
+                                ]
 
 drawGrid :: Level -> [Widget Name]
 drawGrid lvl = [center $
@@ -73,15 +76,25 @@ drawGrid lvl = [center $
     setDefaultColAlignment AlignCenter $
     convertMap2Table (env lvl))]
 
-cell2string :: GameObject -> String 
-cell2string Player = "𓃠"
-cell2string Empty = " "
-cell2string Trash = "◌"
-cell2string Wall = "▩"
-cell2string Stash = "🗑"
+drawCell :: Cell -> Widget Name
+drawCell c =
+  case (background c) of
+    Trashcan -> withAttr (attrName "trashcan_bg") $ txt (pack (cell2string c))
+    Stash -> withAttr (attrName "stash_bg") $ txt (pack (cell2string c))
+    _ -> txt (pack (cell2string c))
 
-convertMap2Table :: Environment -> Table n
-convertMap2Table m = table (map (map (\x -> padLeftRight 1 (txt (pack (cell2string x))))) $ (map (map gameObject) (toLists m)))
+
+cell2string :: Cell -> String 
+cell2string c =
+  case (gameObject c) of
+    Player -> "𓃠"
+    Empty  -> " "
+    Trash  -> "◌"
+    Wall   -> "▩"
+    Stash  -> "🗑"
+
+convertMap2Table :: Environment -> Table Name
+convertMap2Table m = table (map (map (\x -> padLeftRight 1 $ drawCell x)) (toLists m))
 
 -- Handles the exiting of a level.
 -- If `exit` is True, calls `appExit`.
