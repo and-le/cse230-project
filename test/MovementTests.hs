@@ -161,8 +161,8 @@ test17 =
         ])) @?=
   fromCells
     [ [emptyCell, emptyCell, wallCell]
-    , [emptyCell, emptyCell, emptyCell]
-    , [Cell {gameObject = Player, background = Stash}, trashCell, emptyCell]
+    , [playerCell, emptyCell, emptyCell]
+    , [stashCell, trashCell, emptyCell]
     ]
 
 test18 =

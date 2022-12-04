@@ -17,7 +17,58 @@ propertyTests =
     [ testProperty
         "Movement preserves the environment size"
         prop_movePreservesEnvironmentSize
+    , testProperty
+        "Movement preserves the player's existence"
+        prop_movePreservesPlayer
+    , testProperty
+        "Movement preserves the stash's existence"
+        prop_movePreservesStash
+    , testProperty
+        "Movement preserves the walls' existence"
+        prop_movePreservesWalls
+    , testProperty
+        "Movement does not decrease the number of empty cells"
+        prop_moveEmptyCells
     ]
+
+prop_movePreservesEnvironmentSize :: Movement -> EnvWrapper -> Property
+prop_movePreservesEnvironmentSize mv envWrapper =
+  property ((rows', cols') == (rows, cols))
+  where
+    environment = wrappedEnv envWrapper
+    rows = getNumRows environment
+    cols = getNumCols environment
+    environment' = move mv environment
+    rows' = getNumRows environment'
+    cols' = getNumCols environment'
+
+prop_movePreservesPlayer :: Movement -> EnvWrapper -> Property
+prop_movePreservesPlayer mv envWrapper =
+  (countNumPlayers environment == 1) ==> countNumPlayers environment' == 1
+  where
+    environment = wrappedEnv envWrapper
+    environment' = move mv environment
+
+prop_movePreservesStash :: Movement -> EnvWrapper -> Property
+prop_movePreservesStash mv envWrapper =
+  (countNumStashes environment == 1) ==> countNumStashes environment' == 1
+  where
+    environment = wrappedEnv envWrapper
+    environment' = move mv environment
+
+prop_movePreservesWalls :: Movement -> EnvWrapper -> Property
+prop_movePreservesWalls mv envWrapper =
+  property (countNumWalls environment == countNumWalls environment')
+  where
+    environment = wrappedEnv envWrapper
+    environment' = move mv environment
+
+prop_moveEmptyCells :: Movement -> EnvWrapper -> Property
+prop_moveEmptyCells mv envWrapper =
+  property (countNumEmpty environment >= countNumEmpty environment')
+  where
+    environment = wrappedEnv envWrapper
+    environment' = move mv environment
 
 -- Generator for Movement
 instance Arbitrary Movement where
@@ -84,14 +135,3 @@ genDifferentLocation numRows numCols (row, col) = do
   if (row == row' && col == col')
     then (genDifferentLocation numRows numCols (row, col))
     else return (row', col')
-
-prop_movePreservesEnvironmentSize :: Movement -> EnvWrapper -> Property
-prop_movePreservesEnvironmentSize mv envWrapper =
-  property ((rows', cols') == (rows, cols))
-  where
-    environment = wrappedEnv envWrapper
-    rows = getNumRows environment
-    cols = getNumCols environment
-    environment' = move mv environment
-    rows' = getNumRows environment'
-    cols' = getNumCols environment'

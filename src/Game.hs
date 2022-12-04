@@ -78,6 +78,7 @@ cell2string Player = "𓃠"
 cell2string Empty = " "
 cell2string Trash = "◌"
 cell2string Wall = "▩"
+cell2string Stash = "🗑"
 
 convertMap2Table :: Environment -> Table n
 convertMap2Table m = table (map (map (\x -> padLeftRight 1 (txt (pack (cell2string x))))) $ (map (map gameObject) (toLists m)))
