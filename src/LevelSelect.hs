@@ -97,7 +97,7 @@ level_0_env :: Environment
 
 level_0_env = Data.Matrix.fromLists [
     [emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell],
-    [playerCell, trashCell, emptyCell, emptyCell, stashCell, emptyCell],
+    [playerCell, trashcanCell, emptyCell, emptyCell, stashCell, emptyCell],
     [emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell]
   ]
 
@@ -111,7 +111,7 @@ level_1_env = Data.Matrix.fromLists [
     [emptyCell, emptyCell, emptyCell, wallCell, wallCell, emptyCell, emptyCell, emptyCell],
     [wallCell, wallCell, wallCell, wallCell, wallCell, wallCell, wallCell, wallCell],
     [emptyCell, emptyCell, emptyCell, emptyCell, wallCell, emptyCell, emptyCell, emptyCell],
-    [playerCell, trashCell, emptyCell, emptyCell, wallCell, emptyCell, stashCell, emptyCell],
+    [playerCell, trashcanCell, emptyCell, emptyCell, wallCell, emptyCell, stashCell, emptyCell],
     [emptyCell, wallCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell],
     [emptyCell, wallCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell]
   ]
@@ -122,13 +122,13 @@ level_2 = MkLevel {name="The Labs", levelNum=(2), env=level_2_env, trashCount=ge
 level_2_env :: Environment
 level_2_env = Data.Matrix.fromLists [
     [emptyCell, emptyCell, emptyCell, wallCell, emptyCell, emptyCell, emptyCell, emptyCell],
-    [emptyCell, trashCell, emptyCell, wallCell, emptyCell, trashCell, emptyCell, emptyCell],
-    [emptyCell, emptyCell, emptyCell, wallCell, emptyCell, emptyCell, trashCell, emptyCell],
+    [emptyCell, trashcanCell, emptyCell, wallCell, emptyCell, trashcanCell, emptyCell, emptyCell],
+    [emptyCell, emptyCell, emptyCell, wallCell, emptyCell, emptyCell, trashcanCell, emptyCell],
     [wallCell, wallCell, emptyCell, wallCell, wallCell, emptyCell, wallCell, wallCell],
     [emptyCell, emptyCell, emptyCell, wallCell, emptyCell, emptyCell, emptyCell, emptyCell],
     [emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell],
     [playerCell, emptyCell, wallCell, emptyCell, emptyCell, wallCell, wallCell, wallCell],
-    [emptyCell, emptyCell, wallCell, emptyCell, emptyCell, emptyCell, trashCell, stashCell]
+    [emptyCell, emptyCell, wallCell, emptyCell, emptyCell, emptyCell, trashcanCell, stashCell]
   ]
 
 -- Level 3
@@ -139,8 +139,8 @@ level_3_env = Data.Matrix.fromLists [
     [emptyCell, emptyCell, emptyCell, wallCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell],
     [emptyCell, emptyCell, wallCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, stashCell],
     [emptyCell, wallCell, emptyCell, emptyCell, emptyCell, emptyCell, wallCell, wallCell, wallCell],
-    [wallCell, emptyCell, emptyCell, trashCell, emptyCell, wallCell, emptyCell, emptyCell, emptyCell],
-    [emptyCell, trashCell, emptyCell, emptyCell, wallCell, emptyCell, emptyCell, emptyCell, emptyCell],
+    [wallCell, emptyCell, emptyCell, trashcanCell, emptyCell, wallCell, emptyCell, emptyCell, emptyCell],
+    [emptyCell, trashcanCell, emptyCell, emptyCell, wallCell, emptyCell, emptyCell, emptyCell, emptyCell],
     [playerCell, emptyCell, emptyCell, wallCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell],
     [emptyCell, emptyCell, wallCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell]
   ]
@@ -150,7 +150,7 @@ level_4 :: Level
 level_4 = MkLevel {name="Choo-choo!", levelNum=(4), env=level_4_env, trashCount=getTrashCount level_4_env, exit=False, selectlvl=False}
 level_4_env :: Environment
 level_4_env = Data.Matrix.fromLists [
-    [playerCell, emptyCell, trashCell, emptyCell, trashCell, emptyCell, trashCell, emptyCell, trashCell, emptyCell, emptyCell]
+    [playerCell, emptyCell, trashcanCell, emptyCell, trashcanCell, emptyCell, trashcanCell, emptyCell, trashcanCell, emptyCell, emptyCell]
   ]
 
 -- Level 5
@@ -158,13 +158,13 @@ level_5 :: Level
 level_5 = MkLevel {name="I like trolleys", levelNum=(5), env=level_5_env, trashCount=getTrashCount level_5_env, exit=False, selectlvl=False}
 level_5_env :: Environment
 level_5_env = Data.Matrix.fromLists [
-    [stashCell, wallCell, emptyCell, wallCell, emptyCell, emptyCell, trashCell, stashCell],
-    [trashCell, wallCell, emptyCell, wallCell, emptyCell, trashCell, wallCell, wallCell],
-    [emptyCell, trashCell, emptyCell, wallCell, emptyCell, trashCell, emptyCell, emptyCell],
-    [emptyCell, trashCell, emptyCell, wallCell, emptyCell, trashCell, emptyCell, emptyCell],
-    [emptyCell, trashCell, emptyCell, emptyCell, emptyCell, trashCell, emptyCell, emptyCell],
-    [emptyCell, trashCell, emptyCell, wallCell, emptyCell, trashCell, emptyCell, emptyCell],
-    [emptyCell, trashCell, emptyCell, wallCell, emptyCell, emptyCell, playerCell, emptyCell],
+    [stashCell, wallCell, emptyCell, wallCell, emptyCell, emptyCell, trashcanCell, stashCell],
+    [trashcanCell, wallCell, emptyCell, wallCell, emptyCell, trashcanCell, wallCell, wallCell],
+    [emptyCell, trashcanCell, emptyCell, wallCell, emptyCell, trashcanCell, emptyCell, emptyCell],
+    [emptyCell, trashcanCell, emptyCell, wallCell, emptyCell, trashcanCell, emptyCell, emptyCell],
+    [emptyCell, trashcanCell, emptyCell, emptyCell, emptyCell, trashcanCell, emptyCell, emptyCell],
+    [emptyCell, trashcanCell, emptyCell, wallCell, emptyCell, trashcanCell, emptyCell, emptyCell],
+    [emptyCell, trashcanCell, emptyCell, wallCell, emptyCell, emptyCell, playerCell, emptyCell],
     [emptyCell, emptyCell, emptyCell, wallCell, emptyCell, emptyCell, emptyCell, emptyCell]
   ]
 
@@ -179,7 +179,7 @@ level_6_env = Data.Matrix.fromLists [
     [emptyCell, emptyCell, emptyCell, emptyCell, wallCell, wallCell, emptyCell, emptyCell],
     [wallCell, wallCell, wallCell, emptyCell, emptyCell, emptyCell, stashCell, emptyCell],
     [emptyCell, emptyCell, emptyCell, wallCell, wallCell, emptyCell, emptyCell, emptyCell],
-    [emptyCell, trashCell, emptyCell, emptyCell, emptyCell, emptyCell, wallCell, emptyCell],
+    [emptyCell, trashcanCell, emptyCell, emptyCell, emptyCell, emptyCell, wallCell, emptyCell],
     [wallCell, playerCell, emptyCell, wallCell, emptyCell, emptyCell, wallCell, emptyCell]
   ]
 
@@ -190,9 +190,9 @@ level_7_env :: Environment
 level_7_env = Data.Matrix.fromLists [
     [emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, wallCell],
     [emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, wallCell, emptyCell, wallCell],
-    [emptyCell, emptyCell, trashCell, trashCell, trashCell, trashCell, emptyCell, wallCell],
+    [emptyCell, emptyCell, trashcanCell, trashcanCell, trashcanCell, trashcanCell, emptyCell, wallCell],
     [emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, wallCell, emptyCell, wallCell],
-    [emptyCell, emptyCell, trashCell, trashCell, trashCell, trashCell, emptyCell, wallCell],
+    [emptyCell, emptyCell, trashcanCell, trashcanCell, trashcanCell, trashcanCell, emptyCell, wallCell],
     [emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, wallCell, emptyCell, wallCell],
     [emptyCell, playerCell, emptyCell, emptyCell, emptyCell, wallCell, stashCell, wallCell],
     [emptyCell, stashCell, emptyCell, emptyCell, emptyCell, wallCell, wallCell, wallCell]
@@ -204,17 +204,17 @@ level_8 = MkLevel {name="Franklin-Antonio Hall", levelNum=(8), env=level_8_env, 
 level_8_env :: Environment
 level_8_env = Data.Matrix.fromLists [
     [emptyCell, emptyCell, emptyCell, emptyCell, wallCell, emptyCell, emptyCell, emptyCell, emptyCell],
-    [emptyCell, trashCell, trashCell, trashCell, wallCell, emptyCell, emptyCell, emptyCell, emptyCell],
-    [emptyCell, trashCell, wallCell, trashCell, emptyCell, trashCell, trashCell, trashCell, emptyCell],
-    [emptyCell, trashCell, trashCell, trashCell, emptyCell, trashCell, wallCell, trashCell, emptyCell],
-    [emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, trashCell, trashCell, trashCell, emptyCell],
+    [emptyCell, trashcanCell, trashcanCell, trashcanCell, wallCell, emptyCell, emptyCell, emptyCell, emptyCell],
+    [emptyCell, trashcanCell, wallCell, trashcanCell, emptyCell, trashcanCell, trashcanCell, trashcanCell, emptyCell],
+    [emptyCell, trashcanCell, trashcanCell, trashcanCell, emptyCell, trashcanCell, wallCell, trashcanCell, emptyCell],
+    [emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, trashcanCell, trashcanCell, trashcanCell, emptyCell],
     [emptyCell, emptyCell, emptyCell, wallCell, wallCell, wallCell, emptyCell, emptyCell, emptyCell],
     [wallCell, emptyCell, wallCell, wallCell, stashCell, emptyCell, emptyCell, emptyCell, emptyCell],
     [emptyCell, emptyCell, emptyCell, wallCell, wallCell, wallCell, emptyCell, emptyCell, emptyCell],
     [emptyCell, emptyCell, emptyCell, emptyCell, wallCell, emptyCell, emptyCell, emptyCell, emptyCell],
-    [emptyCell, emptyCell, trashCell, trashCell, trashCell, emptyCell, emptyCell, emptyCell, emptyCell],
-    [emptyCell, emptyCell, trashCell, wallCell, trashCell, emptyCell, emptyCell, emptyCell, emptyCell],
-    [emptyCell, emptyCell, trashCell, trashCell, trashCell, emptyCell, emptyCell, emptyCell, emptyCell],
+    [emptyCell, emptyCell, trashcanCell, trashcanCell, trashcanCell, emptyCell, emptyCell, emptyCell, emptyCell],
+    [emptyCell, emptyCell, trashcanCell, wallCell, trashcanCell, emptyCell, emptyCell, emptyCell, emptyCell],
+    [emptyCell, emptyCell, trashcanCell, trashcanCell, trashcanCell, emptyCell, emptyCell, emptyCell, emptyCell],
     [emptyCell, emptyCell, playerCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell]
   ]
 
@@ -223,13 +223,13 @@ level_9 :: Level
 level_9 = MkLevel {name="Pepper Canyon", levelNum=(9), env=level_9_env, trashCount=getTrashCount level_9_env, exit=False, selectlvl=False}
 level_9_env :: Environment
 level_9_env = Data.Matrix.fromLists [
-    [emptyCell, emptyCell, trashCell, trashCell, trashCell, trashCell, stashCell, emptyCell],
+    [emptyCell, emptyCell, trashcanCell, trashcanCell, trashcanCell, trashcanCell, stashCell, emptyCell],
     [emptyCell, emptyCell, wallCell, wallCell, wallCell, wallCell, wallCell, emptyCell],
-    [wallCell, trashCell, emptyCell, emptyCell, emptyCell, trashCell, emptyCell, wallCell],
-    [wallCell, emptyCell, emptyCell, emptyCell, emptyCell, trashCell, emptyCell, wallCell],
-    [wallCell, trashCell, emptyCell, trashCell, trashCell, emptyCell, emptyCell, wallCell],
-    [wallCell, emptyCell, trashCell, playerCell, trashCell, emptyCell, emptyCell, wallCell],
-    [wallCell, emptyCell, emptyCell, trashCell, emptyCell, emptyCell, emptyCell, wallCell],
+    [wallCell, trashcanCell, emptyCell, emptyCell, emptyCell, trashcanCell, emptyCell, wallCell],
+    [wallCell, emptyCell, emptyCell, emptyCell, emptyCell, trashcanCell, emptyCell, wallCell],
+    [wallCell, trashcanCell, emptyCell, trashcanCell, trashcanCell, emptyCell, emptyCell, wallCell],
+    [wallCell, emptyCell, trashcanCell, playerCell, trashcanCell, emptyCell, emptyCell, wallCell],
+    [wallCell, emptyCell, emptyCell, trashcanCell, emptyCell, emptyCell, emptyCell, wallCell],
     [wallCell, wallCell, stashCell, wallCell, wallCell, stashCell, wallCell, wallCell]
   ]
 
