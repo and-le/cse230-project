@@ -56,6 +56,7 @@ instance Show Cell where
 -- Level number and its environment
 data Level = MkLevel {
     levelNum :: Int,
+    name :: String,
     env :: Environment,
     trashCount :: Int,
     exit :: Bool,
@@ -119,7 +120,7 @@ isLevelComplete lvl = trashCount lvl == 0
 -- Wrapper function around the regular `move` that will update game state after
 -- the movement. Currently the count of trash left is updated.
 moveLevel :: Movement -> Level -> Level 
-moveLevel mv lvl = MkLevel {levelNum=levelNum lvl, env=newEnv, trashCount=newTrashCount, exit=False, selectlvl=False}
+moveLevel mv lvl = MkLevel {name=name lvl, levelNum=levelNum lvl, env=newEnv, trashCount=newTrashCount, exit=False, selectlvl=False}
   where 
     newEnv = move mv (env lvl)
     newTrashCount = getTrashCount newEnv 
@@ -237,11 +238,11 @@ getPlayerLocation env =
 
 -- Returns the number of rows for the given rectangular matrix.
 getNumRows :: Matrix a -> Int
-getNumRows mat = Data.Vector.length (getRow 1 mat)
+getNumRows mat = Data.Vector.length (getCol 1 mat)
 
 -- Returns the number of columns for the given rectangular matrix.
 getNumCols :: Matrix a -> Int
-getNumCols mat = Data.Vector.length (getCol 1 mat)
+getNumCols mat = Data.Vector.length (getRow 1 mat)
 
 -- Returns the first-occuring index of an element within the matrix that satisfies the given predicate;
 -- Nothing if the element was not found.
