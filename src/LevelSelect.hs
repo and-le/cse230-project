@@ -173,7 +173,7 @@ level_6 :: Level
 level_6 = MkLevel {name="So close, yet so far", levelNum=(6), env=level_6_env, trashCount=getTrashCount level_6_env, exit=False, selectlvl=False}
 level_6_env :: Environment
 level_6_env = Data.Matrix.fromLists [
-    [emptyCell, emptyCell, emptyCell, trashCell, trashCell, emptyCell, emptyCell, emptyCell],
+    [emptyCell, emptyCell, emptyCell, wallCell, wallCell, emptyCell, emptyCell, emptyCell],
     [emptyCell, wallCell, emptyCell, emptyCell, emptyCell, emptyCell, wallCell, emptyCell],
     [emptyCell, wallCell, wallCell, wallCell, wallCell, wallCell, emptyCell, emptyCell],
     [emptyCell, emptyCell, emptyCell, emptyCell, wallCell, wallCell, emptyCell, emptyCell],
