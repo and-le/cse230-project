@@ -13,6 +13,7 @@ module Sokoban
   , playerCell
   , wallCell
   , trashCell
+  , trashcanCell
   , stashCell
   , isValidMove
   , getTrashCount
