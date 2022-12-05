@@ -65,10 +65,10 @@ instance Arbitrary Movement where
   arbitrary = elements [UpMv, RightMv, DownMv, LeftMv]
 
 -- Generator for Cells. 
--- Only generates trashCell, wallCell, stashCell, and emptyCell, since playerCell is
+-- Only generates trashCell, trashcanCell wallCell, stashCell, and emptyCell, since playerCell is
 -- generally one-of-a-kind for a given level.
 instance Arbitrary Cell where
-  arbitrary = elements [trashCell, wallCell, stashCell, emptyCell]
+  arbitrary = elements [trashCell, trashcanCell, wallCell, stashCell, emptyCell]
 
 -- Wrapper data type for the Environment, required to define
 -- an Arbitrary instance.
