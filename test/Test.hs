@@ -3,17 +3,19 @@ module Main
   ( main
   ) where
 
-import MovementTests
 import Test.Tasty
 import Test.Tasty.HUnit
+import Test.Tasty.QuickCheck
 
+import MovementTests
+import PropertyTests
 import Sokoban
 
 main :: IO ()
 main = defaultMain tests
 
 tests :: TestTree
-tests = testGroup "Tests" [unitTests, movementTests]
+tests = testGroup "Tests" [unitTests, movementTests, propertyTests]
 
 test1 =
   testCase "Get count of trash in level" $

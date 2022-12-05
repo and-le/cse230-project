@@ -5,10 +5,10 @@ module Sokoban
   , Cell(..)
   , Level(..)
   , Environment
+  , Location
   , Movement(..)
   , MoveStatus(..)
   , move
-  , sampleLevel
   , emptyCell
   , playerCell
   , wallCell
@@ -20,25 +20,32 @@ module Sokoban
   , moveLevel
   , isLevelComplete
   , fromCells
+  , getNumRows
+  , getNumCols
+  , countNumPlayers
+  , countNumTrash
+  , countNumWalls
+  , countNumStashes
+  , countNumEmpty
   ) where
 
 import qualified Data.Ix (inRange)
-import qualified Data.List (length, filter)
+import qualified Data.List (filter, length)
 import Data.Matrix
-import qualified Data.Vector (length)
 
 -- An object that the player can interact with in the game
 data GameObject
   = Player
   | Trash
   | Wall
+  | Stash
   | Empty
   deriving (Eq, Show)
 
 -- The appearance of a grid cell
 data Background
   = Trashcan
-  | Stash
+  | StashBG
   | EmptyBG
   deriving (Eq, Show)
 
@@ -55,14 +62,15 @@ instance Show Cell where
   show (Cell gameObject background) = show gameObject ++ ":" ++ show background
 
 -- Level number and its environment
-data Level = MkLevel {
-    levelNum :: Int,
-    name :: String,
-    env :: Environment,
-    trashCount :: Int,
-    exit :: Bool,
-    selectlvl :: Bool
-}
+data Level =
+  MkLevel
+    { levelNum :: Int
+    , name :: String
+    , env :: Environment
+    , trashCount :: Int
+    , exit :: Bool
+    , selectlvl :: Bool
+    }
 
 -- The representation of an individual level
 type Environment = Matrix Cell
@@ -86,45 +94,43 @@ data MoveStatus
 type Location = (Int, Int)
 
 -- level building
-emptyCell :: Cell -- just for shorter code
-emptyCell = Cell {gameObject = Empty, background = EmptyBG}
-
 playerCell :: Cell -- cell with player
 playerCell = Cell {gameObject = Player, background = EmptyBG}
-
-wallCell :: Cell -- a wall
-wallCell = Cell {gameObject = Wall, background = EmptyBG}
-
-trashcanCell :: Cell -- starting point of the trash
-trashcanCell = Cell {gameObject = Trash, background = Trashcan}
 
 trashCell :: Cell -- a cell containing trash that is not the starting point
 trashCell = Cell {gameObject = Trash, background = EmptyBG}
 
-stashCell :: Cell -- an empty stash
-stashCell = Cell {gameObject = Empty, background = Stash}
+wallCell :: Cell -- a wall
+wallCell = Cell {gameObject = Wall, background = EmptyBG}
 
--- level definitions
-sampleLevel :: Environment
-sampleLevel =
-  fromLists
-    [ [emptyCell, emptyCell, wallCell, emptyCell]
-    , [emptyCell, trashCell, trashCell, wallCell]
-    , [emptyCell, trashCell, trashCell, playerCell]
-    , [wallCell, wallCell, wallCell, emptyCell]
-    ]
+stashCell :: Cell -- an empty stash
+stashCell = Cell {gameObject = Stash, background = StashBG}
+
+emptyCell :: Cell -- just for shorter code
+emptyCell = Cell {gameObject = Empty, background = EmptyBG}
+
+trashcanCell :: Cell -- starting point of the trash
+trashcanCell = Cell {gameObject = Trash, background = Trashcan}
 
 -- Returns True if the given level is in a completed state; False otherwise
-isLevelComplete :: Level -> Bool 
+isLevelComplete :: Level -> Bool
 isLevelComplete lvl = trashCount lvl == 0
- 
+
 -- Wrapper function around the regular `move` that will update game state after
 -- the movement. Currently the count of trash left is updated.
-moveLevel :: Movement -> Level -> Level 
-moveLevel mv lvl = MkLevel {name=name lvl, levelNum=levelNum lvl, env=newEnv, trashCount=newTrashCount, exit=False, selectlvl=False}
-  where 
+moveLevel :: Movement -> Level -> Level
+moveLevel mv lvl =
+  MkLevel
+    { name = name lvl
+    , levelNum = levelNum lvl
+    , env = newEnv
+    , trashCount = newTrashCount
+    , exit = False
+    , selectlvl = False
+    }
+  where
     newEnv = move mv (env lvl)
-    newTrashCount = getTrashCount newEnv 
+    newTrashCount = getTrashCount newEnv
 
 -- handle state change for motions
 move :: Movement -> Environment -> Environment
@@ -146,14 +152,15 @@ moveHelper mv fromLoc env = newEnv'
     toElem = getCellAtLocation toLoc env
       -- The updated elements after performing the move:
       -- The backgrounds are currently kept the same.
-      -- The object in the from-location replaces the object in the to-location.
+      -- The object in the from-location replaces the object in the to-location,
+      -- unless the to-object is unpushable (i.e., a stash or wall).
       -- Trash should disappear if it is pushed into the stash
     fromElem' = Cell {gameObject = Empty, background = (background fromElem)}
     toElem' =
       Cell
         { gameObject =
-            (if (containsStash toLoc env) && (gameObject fromElem == Trash)
-               then Empty
+            (if (containsStash toElem || containsWall toElem)
+               then gameObject toElem
                else gameObject fromElem)
         , background = (background toElem)
         }
@@ -165,12 +172,10 @@ moveHelper mv fromLoc env = newEnv'
     newEnv' = setElem toElem' toLoc (setElem fromElem' fromLoc newEnv)
 
 -- Returns the count of Trash objects in the given Environment.
-getTrashCount :: Environment -> Int 
-getTrashCount env = Data.List.length (Data.List.filter (\cell -> gameObject cell == Trash) (toList env))
-
--- Returns True if the given location in the environment contains a stash; False otherwise.
-containsStash :: Location -> Environment -> Bool
-containsStash loc env = background (getCellAtLocation loc env) == Stash
+getTrashCount :: Environment -> Int
+getTrashCount env =
+  Data.List.length
+    (Data.List.filter (\cell -> gameObject cell == Trash) (toList env))
 
 -- Returns the Cell at the given location in the environment.
 getCellAtLocation :: Location -> Environment -> Cell
@@ -184,6 +189,7 @@ isValidMove mv loc env =
     then ValidMov
     else InvalidMov
   where
+    fromCell = getCellAtLocation loc env
     destLoc = getLocationAfterMovement mv loc
     destCell = getCellAtLocation destLoc env
     boundsCheck =
@@ -192,7 +198,8 @@ isValidMove mv loc env =
       (not (containsWall destCell)) &&
       (not (containsPlayer destCell)) &&
       (containsEmptySpace destCell ||
-       (containsTrash destCell && (isValidMove mv destLoc env == ValidMov)))
+       (containsTrash destCell && (isValidMove mv destLoc env == ValidMov)) ||
+       (containsTrash fromCell && containsStash destCell))
 
 -- Returns True if the given location is within the environment; False otherwise.
 isWithinEnvironment :: Location -> Environment -> Bool
@@ -209,63 +216,87 @@ getLocationAfterMovement RightMv (row, col) = (row, col + 1)
 getLocationAfterMovement DownMv (row, col) = (row + 1, col)
 getLocationAfterMovement LeftMv (row, col) = (row, col - 1)
 
--- Returns True if the given Cell contains a Wall, False otherwise.
-containsWall :: Cell -> Bool
-containsWall (Cell Wall _) = True
-containsWall _ = False
-
 -- Returns True if the given Cell contains a Player; False otherwise.
 containsPlayer :: Cell -> Bool
 containsPlayer (Cell Player _) = True
 containsPlayer _ = False
-
--- Returns True if the given Cell contains an Empty space; False otherwise.
-containsEmptySpace :: Cell -> Bool
-containsEmptySpace (Cell Empty _) = True
-containsEmptySpace _ = False
 
 -- Returns True if the given Cell contains a Trash; False otherwise.
 containsTrash :: Cell -> Bool
 containsTrash (Cell Trash _) = True
 containsTrash _ = False
 
+-- Returns True if the given Cell contains a Wall, False otherwise.
+containsWall :: Cell -> Bool
+containsWall (Cell Wall _) = True
+containsWall _ = False
+
+-- Returns True if the given Cell contains a stash; False otherwise.
+containsStash :: Cell -> Bool
+containsStash (Cell Stash _) = True
+containsStash _ = False
+
+-- Returns True if the given Cell contains an Empty space; False otherwise.
+containsEmptySpace :: Cell -> Bool
+containsEmptySpace (Cell Empty _) = True
+containsEmptySpace _ = False
+
+-- Returns the number of cells in the Environment containing a player.
+countNumPlayers :: Environment -> Int
+countNumPlayers env = length (filter containsPlayer (toList env))
+
+-- Returns the number of cells in the Environment containing a trash object.
+countNumTrash :: Environment -> Int
+countNumTrash env = length (filter containsTrash (toList env))
+
+-- Returns the number of cells in the Environment containing a wall.
+countNumWalls :: Environment -> Int
+countNumWalls env = length (filter containsWall (toList env))
+
+-- Returns the number of cells in the Environment containing a stash.
+countNumStashes :: Environment -> Int
+countNumStashes env = length (filter containsStash (toList env))
+
+-- Returns the number of cells in the Environment containing an empty space.
+countNumEmpty :: Environment -> Int
+countNumEmpty env = length (filter containsEmptySpace (toList env))
+
 -- Returns the (row, column) 1-based index of the player element in the given environment;
 -- if the player is not present, returns (-1, -1).
 getPlayerLocation :: Environment -> Location
 getPlayerLocation env =
-  case findIndexMatrix env containsPlayer of
+  case findIndexEnvironment env containsPlayer of
     Just location -> location
     Nothing -> (-1, -1)
 
--- Returns the number of rows for the given rectangular matrix.
-getNumRows :: Matrix a -> Int
-getNumRows mat = Data.Vector.length (getCol 1 mat)
+-- Returns the number of rows for the given environment.
+getNumRows :: Environment -> Int
+getNumRows env = nrows env
 
--- Returns the number of columns for the given rectangular matrix.
-getNumCols :: Matrix a -> Int
-getNumCols mat = Data.Vector.length (getRow 1 mat)
+-- Returns the number of columns for the given environment
+getNumCols :: Environment -> Int
+getNumCols env = ncols env
 
--- Returns the first-occuring index of an element within the matrix that satisfies the given predicate;
+-- Returns the first-occuring index of an element within the Environment that satisfies the given predicate;
 -- Nothing if the element was not found.
-findIndexMatrix :: (Eq a) => Matrix a -> (a -> Bool) -> Maybe Location
-findIndexMatrix mat predicate =
-  helper mat predicate (getNumRows mat) (getNumCols mat) 1 1
+findIndexEnvironment :: Environment -> (Cell -> Bool) -> Maybe Location
+findIndexEnvironment env predicate =
+  helper env predicate (getNumRows env) (getNumCols env) 1 1
   where
     helper ::
-         (Eq a)
-      => Matrix a
-      -> (a -> Bool)
+         Environment
+      -> (Cell -> Bool)
       -> Int
       -> Int
       -> Int
       -> Int
       -> Maybe Location
-    helper mat predicate numRows numCols row col
+    helper env predicate numRows numCols row col
       | row > numRows = Nothing -- reached end of matrix without finding desired element
-      | col > numCols = helper mat predicate numRows numCols (row + 1) 1 -- reached end of row
-      | predicate (getElem row col mat) = Just (row, col)
-      | otherwise = helper mat predicate numRows numCols row (col + 1)
+      | col > numCols = helper env predicate numRows numCols (row + 1) 1 -- reached end of row
+      | predicate (getElem row col env) = Just (row, col)
+      | otherwise = helper env predicate numRows numCols row (col + 1)
 
 -- Creates an Environment from a grid of Cells 
-fromCells :: [[Cell]] -> Environment 
-fromCells cells = fromLists cells 
+fromCells :: [[Cell]] -> Environment
+fromCells cells = fromLists cells

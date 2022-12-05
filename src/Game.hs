@@ -80,7 +80,7 @@ drawCell :: Cell -> Widget Name
 drawCell c =
   case (background c) of
     Trashcan -> withAttr (attrName "trashcan_bg") $ txt (pack (cell2string c))
-    Stash -> withAttr (attrName "stash_bg") $ txt (pack (cell2string c))
+    StashBG -> withAttr (attrName "stash_bg") $ txt (pack (cell2string c))
     _ -> txt (pack (cell2string c))
 
 
@@ -91,6 +91,7 @@ cell2string c =
     Empty  -> " "
     Trash  -> "◌"
     Wall   -> "▩"
+    Stash  -> "🗑"
 
 convertMap2Table :: Environment -> Table Name
 convertMap2Table m = table (map (map (\x -> padLeftRight 1 $ drawCell x)) (toLists m))

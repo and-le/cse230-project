@@ -44,7 +44,8 @@ test-suite test
   type:             exitcode-stdio-1.0
   hs-source-dirs:   test
   main-is:          Test.hs
-  other-modules:    MovementTests
+  other-modules:    MovementTests, 
+                    PropertyTests
   build-depends:    base,
                     matrix,
                     QuickCheck,
