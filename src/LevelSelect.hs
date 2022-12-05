@@ -150,7 +150,7 @@ level_4 :: Level
 level_4 = MkLevel {name="Choo-choo!", levelNum=(4), env=level_4_env, trashCount=getTrashCount level_4_env, exit=False, selectlvl=False}
 level_4_env :: Environment
 level_4_env = Data.Matrix.fromLists [
-    [playerCell, emptyCell, trashcanCell, emptyCell, trashcanCell, emptyCell, trashcanCell, emptyCell, trashcanCell, emptyCell, emptyCell]
+    [playerCell, emptyCell, trashcanCell, emptyCell, trashcanCell, emptyCell, trashcanCell, emptyCell, trashcanCell, emptyCell, stashCell]
   ]
 
 -- Level 5
