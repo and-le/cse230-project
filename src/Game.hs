@@ -6,12 +6,12 @@ import Data.Text (pack)
 
 import Brick (
                App(..), BrickEvent(..), EventM, Widget, Next,
-               (<+>), str, withBorderStyle, emptyWidget, padLeftRight,
-               neverShowCursor, vBox, defaultMain, txt, continue, halt,
+               str, withBorderStyle, padLeftRight,
+               neverShowCursor, defaultMain, txt, continue, halt,
                withAttr
              )
 import Brick.AttrMap
-import Brick.Util (fg, bg)
+import Brick.Util (bg)
 import Brick.Widgets.Table
 import Brick.Widgets.Center (center)
 import Brick.Widgets.Border.Style (unicode)
@@ -24,6 +24,7 @@ import LevelSelect
 
 type Name = ()
 
+-- Main app
 app :: App Level e Name
 app = App
   { appDraw         = drawGrid
@@ -33,17 +34,22 @@ app = App
   , appAttrMap      = const attributes
   }
 
+-- Level used for exiting
+exitLevel :: Level 
+exitLevel = MkLevel {name="Exit Level", levelNum = -1, env=exitLevelEnv, trashCount=(-1), exit=True, selectlvl=False}
+exitLevelEnv = Data.Matrix.fromLists [[playerCell]]
 
 handleEvent :: Level -> BrickEvent Name e -> EventM Name (Next Level)
 -- (Esc, q) key to quit
-handleEvent lvl (VtyEvent (V.EvKey V.KEsc [])) = halt MkLevel {levelNum = -1, env = env lvl, trashCount = -1, exit = True, selectlvl = False}
-handleEvent lvl (VtyEvent (V.EvKey (V.KChar 'q') [])) = halt MkLevel {levelNum = -1, env = env lvl, trashCount = -1, exit = True, selectlvl = False}
+handleEvent _ (VtyEvent (V.EvKey V.KEsc [])) = halt exitLevel
+handleEvent _ (VtyEvent (V.EvKey (V.KChar 'q') [])) = halt exitLevel
+-- Advance to the next level
 handleEvent lvl (VtyEvent (V.EvKey (V.KChar 'n') [])) = halt lvl
 -- Reset Level
 handleEvent lvl (VtyEvent (V.EvKey (V.KChar 'r') [])) = continue $ resetLevel lvl
 
 -- Go back to level select
-handleEvent lvl (VtyEvent (V.EvKey V.KBS [])) = halt MkLevel {levelNum = -1, env = env lvl, trashCount = -1, exit = False, selectlvl=True}
+handleEvent lvl (VtyEvent (V.EvKey V.KBS [])) = halt MkLevel {name = "", levelNum = -1, env = env lvl, trashCount = -1, exit = False, selectlvl=True}
 
 -- Player Movement. We first perform the movement and then check whether the level has been completed. If so,
 -- we halt.
@@ -60,15 +66,16 @@ handleEvent lvl (VtyEvent (V.EvKey V.KLeft [])) = if (isLevelComplete lvl') then
   where
     lvl' = moveLevel LeftMv lvl 
 
--- Unrecognized keys
+-- Unrecognized keys: do nothing
 handleEvent lvl _                              = continue lvl
 
--- does nothing right now
+-- Enables coloring of cells
 attributes :: AttrMap
 attributes = attrMap V.defAttr [(attrName "stash_bg", bg V.green),
                                 (attrName "trashcan_bg", bg V.blue)
                                 ]
 
+-- Function for rendering a level in Brick
 drawGrid :: Level -> [Widget Name]
 drawGrid lvl = [center $
     B.borderWithLabel (str (" Level " ++ show (levelNum lvl) ++ " - " ++ name lvl ++ " ")) $
@@ -76,6 +83,7 @@ drawGrid lvl = [center $
     setDefaultColAlignment AlignCenter $
     convertMap2Table (env lvl))]
 
+-- Function for rendering an individual cell within a level
 drawCell :: Cell -> Widget Name
 drawCell c =
   case (background c) of
@@ -83,7 +91,7 @@ drawCell c =
     StashBG -> withAttr (attrName "stash_bg") $ txt (pack (cell2string c))
     _ -> txt (pack (cell2string c))
 
-
+-- Mapping of game object types to strings to render
 cell2string :: Cell -> String 
 cell2string c =
   case (gameObject c) of
@@ -93,6 +101,7 @@ cell2string c =
     Wall   -> " ▩ "
     Stash  -> "|_|"
 
+-- Converts an Environment to a Table
 convertMap2Table :: Environment -> Table Name
 convertMap2Table m = table (map (map (\x -> padLeftRight 1 $ drawCell x)) (toLists m))
 
@@ -110,15 +119,15 @@ handleLevelExit lvl =
       then
         do
           level <- levelSelect
-          return (MkLevel {name="", levelNum = (levelNum level), exit=False, selectlvl=True})
+          return (level {selectlvl = True})
       else
         if levelNum lvl < max_level 
           then 
             do 
-              return (resetLevel MkLevel {name="", levelNum = (levelNum lvl + 1)})
+              return (resetLevel lvl {levelNum = (levelNum lvl + 1)})
           else 
             do 
-              defaultMain appComplete (MkLevel {name="", exit = True}) 
+              defaultMain appComplete (lvl {exit = True}) 
 
 
 -- UI for exiting Raccoon Rush
