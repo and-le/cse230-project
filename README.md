@@ -16,3 +16,5 @@ A player also has the ability to reset the state of a level entirely.
 # Installation
 To run the game, run the command `stack run` in a terminal in the `cse230-project` directory.
 To run the tests, run the command `stack test` in a terminal in the `cse230-project` directory.
+
+![GIF of game running](https://github.com/and-le/cse230-project/blob/main/resources/demo.gif)
