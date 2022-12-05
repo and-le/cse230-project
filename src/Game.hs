@@ -87,11 +87,11 @@ drawCell c =
 cell2string :: Cell -> String 
 cell2string c =
   case (gameObject c) of
-    Player -> "𓃠"
-    Empty  -> " "
-    Trash  -> "◌"
-    Wall   -> "▩"
-    Stash  -> "🗑"
+    Player -> "ᓚᘏᗢ"
+    Empty  -> "   "
+    Trash  -> " ◌ "
+    Wall   -> " ▩ "
+    Stash  -> "|_|"
 
 convertMap2Table :: Environment -> Table Name
 convertMap2Table m = table (map (map (\x -> padLeftRight 1 $ drawCell x)) (toLists m))
