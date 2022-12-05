@@ -83,10 +83,9 @@ lvlAttrMap = attrMap V.defAttr
 max_level :: Int
 max_level = 9
 
-
 -- Empty Level
-empty_lvl :: Level
-empty_lvl = MkLevel {name="Empty", levelNum=(-1), env=empty_lvl_env, trashCount=(-1), exit=False, selectlvl=False}
+-- empty_lvl :: Level
+-- empty_lvl = MkLevel {name="Empty", levelNum=(-1), env=empty_lvl_env, trashCount=(-1), exit=False, selectlvl=False}
 empty_lvl_env :: Environment
 empty_lvl_env = Data.Matrix.fromLists [[playerCell]]
 
@@ -236,8 +235,8 @@ level_9_env = Data.Matrix.fromLists [
 -- Event Handling for Level Select Screen
 handleEvent :: Selector -> BrickEvent () e -> EventM Name (Next Selector)
 -- Exiting Level Select
-handleEvent env (VtyEvent (V.EvKey V.KEsc [])) = halt $ MkSelector {highlighted = -1}
-handleEvent env (VtyEvent (V.EvKey (V.KChar 'q') [])) = halt $ MkSelector {highlighted = -1}
+handleEvent _ (VtyEvent (V.EvKey V.KEsc [])) = halt $ MkSelector {highlighted = -1}
+handleEvent _ (VtyEvent (V.EvKey (V.KChar 'q') [])) = halt $ MkSelector {highlighted = -1}
 -- Level Select Event
 handleEvent env (VtyEvent (V.EvKey (V.KChar d) [])) =
   if d `elem` ['0' .. ((show max_level) !! 0)] then

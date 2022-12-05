@@ -26,9 +26,6 @@ propertyTests =
     , testProperty
         "Movement preserves the walls' existence"
         prop_movePreservesWalls
-    , testProperty
-        "Movement does not decrease the number of empty cells"
-        prop_moveEmptyCells
     ]
 
 prop_movePreservesEnvironmentSize :: Movement -> EnvWrapper -> Property
@@ -51,7 +48,7 @@ prop_movePreservesPlayer mv envWrapper =
 
 prop_movePreservesStash :: Movement -> EnvWrapper -> Property
 prop_movePreservesStash mv envWrapper =
-  (countNumStashes environment == 1) ==> countNumStashes environment' == 1
+  property (countNumStashes environment == countNumStashes environment')
   where
     environment = wrappedEnv envWrapper
     environment' = move mv environment
@@ -63,22 +60,15 @@ prop_movePreservesWalls mv envWrapper =
     environment = wrappedEnv envWrapper
     environment' = move mv environment
 
-prop_moveEmptyCells :: Movement -> EnvWrapper -> Property
-prop_moveEmptyCells mv envWrapper =
-  property (countNumEmpty environment >= countNumEmpty environment')
-  where
-    environment = wrappedEnv envWrapper
-    environment' = move mv environment
-
 -- Generator for Movement
 instance Arbitrary Movement where
   arbitrary = elements [UpMv, RightMv, DownMv, LeftMv]
 
 -- Generator for Cells. 
--- Only generates trashCell, wallCell, and emptyCell, since playerCell and stashCell
--- are generally one-of-a-kind for a given level.
+-- Only generates trashCell, trashcanCell wallCell, stashCell, and emptyCell, since playerCell is
+-- generally one-of-a-kind for a given level.
 instance Arbitrary Cell where
-  arbitrary = elements [trashCell, wallCell, emptyCell]
+  arbitrary = elements [trashCell, trashcanCell, wallCell, stashCell, emptyCell]
 
 -- Wrapper data type for the Environment, required to define
 -- an Arbitrary instance.
@@ -99,23 +89,19 @@ instance Arbitrary EnvWrapper where
 -- The number of columns is then chosen randomly to be in the range [2, rows].
 genEnvironment :: Int -> Gen EnvWrapper
 genEnvironment numRows = do
-  let numRows' = max 2 numRows
+  let numRows' = max 2 numRows 
   numCols <- chooseInt (2, max 2 numRows')
       -- Generate a random location for the player
   playerLoc@(playerRow, playerCol) <- genLocation numRows' numCols
-      -- Generate a different random location for the stash
-  stashLoc@(stashRow, stashCol) <-
-    genDifferentLocation numRows' numCols playerLoc
       -- Generate a flattened matrix of cells
   cells <- vectorOf (numRows' * numCols) (arbitrary :: Gen Cell)
-      -- Place the player and stash into the environment
+      -- Place the player into the environment
   let grid =
         Data.Matrix.setElem
           playerCell
           playerLoc
           (Data.Matrix.fromList numRows' numCols cells)
-  let grid' = Data.Matrix.setElem stashCell stashLoc grid
-  return (EnvWrapper grid')
+  return (EnvWrapper grid)
 
 -- Generates a random (row, column) location such that row is in the range [1, maxRow]
 -- and column is in the range [1, maxCol].
@@ -124,14 +110,3 @@ genLocation maxRow maxCol = do
   row <- chooseInt (1, maxRow)
   col <- chooseInt (1, maxCol)
   return (row, col)
-
--- Generates a random (row', column') location such that row is in the range [1, maxRow],
--- column is in the range [1, maxCol], and row /= row' and col /= col'.
--- If a duplicate location is generated, retries the pair generation until a non-duplicate
--- is generated.
-genDifferentLocation :: Int -> Int -> Location -> Gen Location
-genDifferentLocation numRows numCols (row, col) = do
-  (row', col') <- genLocation numRows numCols
-  if (row == row' && col == col')
-    then (genDifferentLocation numRows numCols (row, col))
-    else return (row', col')
